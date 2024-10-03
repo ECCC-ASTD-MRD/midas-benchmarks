@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -euo pipefail
+
+## The two current options are "11x52" and "48x52".
+
+npex=${1:-48}
+npey=${2:-52}
+LETKF_GLB10KM_MPITOPOLOGY=${npex}x${npey}
+
+scripts_directory=midas/tools/midas_scripts
+
+midas_version=$(cd midas; ./midas_version.sh)
+letkf_program=${PWD}/midas/compiledir/midas_abs/midas-letkf_${ORDENV_PLAT}-${midas_version}.Abs
+splitobs_program=${PWD}/midas/compiledir/midas_abs//midas.splitobs_${ORDENV_PLAT}-${midas_version}.Abs
+
+inputs=/home/sanl000/data_maestro/ppp5/UnitTests/midas/letkf/glb_10km/0001_48x52
+namelist=${PWD}/midas/maestro/suites/midas_system_tests/config/Tests/letkf/glb_10km/nml_48x52
+
+workdir=${PWD}/work/10km_${LETKF_GLB10KM_MPITOPOLOGY}
+observations=/home/sanl000/data/ppp5/UnitTests/midas/letkf/glb_10km/obs
+
+if [[ ! -d "${workdir}" ]]; then
+    ${scripts_directory}/midas.prepare_workdir -workdir ${workdir}               \
+                                               -nml ${namelist}                  \
+                                               -ensemble ${inputs}/inputs_ens.ca \
+                                               -observations ${observations}     \
+                                               -constants ${inputs}/inputs.ca    \
+                                               -npex ${npex} -npey ${npey}       \
+                                               -splitobs ${program_directory}
+fi
+
+${scripts_directory}/midas.launch_program -workdir ${workdir} -pgm ${letkf_program} \
+                                          -nml ${namelist}    -omp_num_threads 4
