@@ -1,0 +1,49 @@
+#!/bin/bash
+
+set -euo pipefail
+
+## The two current options are "11x52" and "48x52".
+
+npex=${1:-48}
+npey=${2:-52}
+LETKF_GLB10KM_MPITOPOLOGY=${npex}x${npey}
+
+scripts_directory=midas/tools/midas_scripts
+
+midas_version=$(cd midas; ./midas.version.sh)
+letkf_program=${PWD}/midas/compiledir/midas_abs/midas-letkf_${ORDENV_PLAT}-${midas_version}.Abs
+splitobs_program=${PWD}/midas/compiledir/midas_abs/midas.splitobs_${ORDENV_PLAT}-${midas_version}.Abs
+
+inputs=/home/sanl000/data_maestro/ppp5/UnitTests/midas/letkf/glb_10km/0001_48x52
+namelist=${PWD}/nml_randomShuffleSubEns
+
+workdir=${PWD}/work/10km_randomShuffleSubEns_${LETKF_GLB10KM_MPITOPOLOGY}
+workdir_control=${PWD}/work/10km_${LETKF_GLB10KM_MPITOPOLOGY}
+observations=${PWD}/obs
+
+if [[ ! -f ${workdir_control}/prepare_done_${npex}x${npey} ]]; then
+    if [[ -d "${workdir}" ]]; then
+        if [[ -d "${workdir}.old" ]]; then
+            echo "The directory '${workdir}.old' exists.  We will erase it!"
+            datetag=$(date +%Y%m%d%H%M%S%n)
+            mv ${workdir}.old ${workdir}.old-${datetag}
+            rm -rf ${workdir}.old-${datetag} &
+        fi
+        mv ${workdir} ${workdir}.old
+        rm -rf ${workdir} &
+    fi
+
+    ${scripts_directory}/midas.prepare_workdir -workdir ${workdir}               \
+                                               -nml ${namelist}                  \
+                                               -ensemble ${inputs}/inputs_ens.ca \
+                                               -observations ${observations}     \
+                                               -constants ${inputs}/inputs.ca    \
+                                               -npex ${npex} -npey ${npey}       \
+                                               -splitobs ${splitobs_program}
+elif [[ ! -d "${workdir}" ]]; then
+    echo "Copy ${workdir_control} to ${workdir}"
+    sscp -r ${workdir_control} ${workdir}
+fi
+
+${scripts_directory}/midas.launch_program -workdir ${workdir} -pgm ${letkf_program} \
+                                          -nml ${namelist}    -omp_num_threads 4
