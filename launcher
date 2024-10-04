@@ -10,9 +10,9 @@ LETKF_GLB10KM_MPITOPOLOGY=${npex}x${npey}
 
 scripts_directory=midas/tools/midas_scripts
 
-midas_version=$(cd midas; ./midas_version.sh)
+midas_version=$(cd midas; ./midas.version.sh)
 letkf_program=${PWD}/midas/compiledir/midas_abs/midas-letkf_${ORDENV_PLAT}-${midas_version}.Abs
-splitobs_program=${PWD}/midas/compiledir/midas_abs//midas.splitobs_${ORDENV_PLAT}-${midas_version}.Abs
+splitobs_program=${PWD}/midas/compiledir/midas_abs/midas.splitobs_${ORDENV_PLAT}-${midas_version}.Abs
 
 inputs=/home/sanl000/data_maestro/ppp5/UnitTests/midas/letkf/glb_10km/0001_48x52
 namelist=${PWD}/midas/maestro/suites/midas_system_tests/config/Tests/letkf/glb_10km/nml_48x52
@@ -27,7 +27,7 @@ if [[ ! -d "${workdir}" ]]; then
                                                -observations ${observations}     \
                                                -constants ${inputs}/inputs.ca    \
                                                -npex ${npex} -npey ${npey}       \
-                                               -splitobs ${program_directory}
+                                               -splitobs ${splitobs_program}
 fi
 
 ${scripts_directory}/midas.launch_program -workdir ${workdir} -pgm ${letkf_program} \
