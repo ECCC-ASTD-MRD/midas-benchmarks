@@ -24,9 +24,11 @@ if [[ ! -f ${workdir}/prepare_done_${npex}x${npey} ]]; then
     if [[ -d "${workdir}" ]]; then
         if [[ -d "${workdir}.old" ]]; then
             echo "The directory '${workdir}.old' exists.  We will erase it!"
-        else
-            mv ${workdir} ${workdir}.old
+            datetag=$(date +%Y%m%d%H%M%S%n)
+            mv ${workdir}.old ${workdir}.old-${datetag}
+            rm -rf ${workdir}.old-${datetag} &
         fi
+        mv ${workdir} ${workdir}.old
         rm -rf ${workdir} &
     fi
 
