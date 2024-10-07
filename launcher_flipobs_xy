@@ -1,0 +1,94 @@
+#!/bin/bash
+
+set -euo pipefail
+
+## The two current options are "11x52" and "48x52".
+
+if [[ $# = 0 ]]; then
+    echo "launch_flipobs_xy: The user should provide at least one argument which is the flip side.  It must be 'x', 'y' or 'xy'." >&2
+    exit 1
+fi
+flip_side=${1}
+if [[ ${flip_side} != x && ${flip_side} != y && ${flip_side} != xy ]]; then
+    echo "launch_flipobs_xy: The first argument can only be 'x', 'y' or 'xy' not '${flip_side}'" >&2
+    exit 1
+fi
+npex=${2:-48}
+npey=${3:-52}
+LETKF_GLB10KM_MPITOPOLOGY=${npex}x${npey}
+
+scripts_directory=midas/tools/midas_scripts
+
+midas_version=$(cd midas; ./midas.version.sh)
+letkf_program=${PWD}/midas/compiledir/midas_abs/midas-letkf_${ORDENV_PLAT}-${midas_version}.Abs
+splitobs_program=${PWD}/midas/compiledir/midas_abs/midas.splitobs_${ORDENV_PLAT}-${midas_version}.Abs
+
+inputs=/home/sanl000/data_maestro/ppp5/UnitTests/midas/letkf/glb_10km/0001_48x52
+
+workdir=${PWD}/work/10km_flipobs_${flip_side}_${LETKF_GLB10KM_MPITOPOLOGY}
+workdir_control=${PWD}/work/10km_${LETKF_GLB10KM_MPITOPOLOGY}
+observations=${PWD}/obs
+
+if [[ ! -f ${workdir_control}/prepare_done_${npex}x${npey} ]]; then
+    if [[ -d "${workdir}" ]]; then
+        if [[ -d "${workdir}.old" ]]; then
+            echo "The directory '${workdir}.old' exists.  We will erase it!"
+            datetag=$(date +%Y%m%d%H%M%S%n)
+            mv ${workdir}.old ${workdir}.old-${datetag}
+            rm -rf ${workdir}.old-${datetag} &
+        fi
+        mv ${workdir} ${workdir}.old
+        rm -rf ${workdir} &
+    fi
+
+    ${scripts_directory}/midas.prepare_workdir -workdir ${workdir}               \
+                                               -nml ${namelist}                  \
+                                               -ensemble ${inputs}/inputs_ens.ca \
+                                               -observations ${observations}     \
+                                               -constants ${inputs}/inputs.ca    \
+                                               -npex ${npex} -npey ${npey}       \
+                                               -splitobs ${splitobs_program}
+elif [[ ! -d ${workdir} ]]; then
+    echo "Copy ${workdir_control} to ${workdir}"
+    sscp -r ${workdir_control} ${workdir}
+    [[ -f ${workdir}/prepare_done_${npex}x${npey} ]] && rm ${workdir}/prepare_done_${npex}x${npey}
+fi
+
+if [[ ! -f "${workdir}/prepare_done_${npex}x${npey}" ]]; then 
+    original_directory=${PWD}
+    cd  ${workdir}
+    mkdir obsfiles_split_flipped
+    mv obsfiles_split obsfiles_split_unflipped
+    idy=1
+    while (( idy <= npey )); do
+        idystr=$(printf "%04d" ${idy})
+        if [[ ${flip_side} = *y ]]; then ## matching 'y' or 'xy'
+            idy_flipped_str=$(printf "%04d" $((npey-idy+1)))
+        else
+            idy_flipped_str=${idystr}
+        fi
+
+        idx=1
+        while (( idx <= npex )); do
+            idxstr=$(printf "%04d" ${idx})
+            if [[ ${flip_side} = x* ]]; then ## matching 'x' or 'xy'
+                idx_flipped_str=$(printf "%04d" $((npex-idx+1)))
+            else
+                idx_flipped_str=${idxstr}
+            fi
+            for file in obsfiles_split_unflipped/obs*_${idxstr}_${idystr}; do
+                newname=$(basename ${file} | sed "s/_${idxstr}_${idystr}$//")_${idx_flipped_str}_${idy_flipped_str}
+                mv ${file} obsfiles_split_flipped/${newname}
+            done
+            idx=$((idx+1))
+        done
+
+        idy=$((idy+1))
+    done
+    mv obsfiles_split_flipped obsfiles_split
+    cd ${original_directory}
+    touch ${workdir}/prepare_done_${npex}x${npey}
+fi
+
+${scripts_directory}/midas.launch_program -workdir ${workdir} -pgm ${letkf_program} \
+                                          -omp_num_threads 4
