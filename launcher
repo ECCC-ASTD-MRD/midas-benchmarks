@@ -10,18 +10,26 @@ LETKF_GLB10KM_MPITOPOLOGY=${npex}x${npey}
 
 scripts_directory=midas/tools/midas_scripts
 
+optimization_level=debug
 midas_version=v_4.0.2-14-gb883925 ## compiled with './midas_build --debug'
+optimization_level=O3
+midas_version=v_4.0.2-14-g4edee23 ## compiled with '-O 3'
+optimization_level=O2
+midas_version=v_4.0.2-15-gee024eb ## compiled with '-O 2'
+optimization_level=O1
+midas_version=v_4.0.2-16-g70f6440 ## compiled with '-O 1'
+
 letkf_program=${PWD}/midas/compiledir/midas_abs/midas-letkf_${ORDENV_PLAT}-${midas_version}.Abs
 splitobs_program=${PWD}/midas/compiledir/midas_abs/midas.splitobs_${ORDENV_PLAT}-${midas_version}.Abs
 
 inputs=/home/sanl000/data_maestro/ppp5/UnitTests/midas/letkf/glb_10km/0001_48x52
 namelist=${PWD}/midas/maestro/suites/midas_system_tests/config/Tests/letkf/glb_10km/nml_48x52
 
-workdir=${PWD}/work/10km_debug_${LETKF_GLB10KM_MPITOPOLOGY}
+workdir=${PWD}/work/10km_${optimization_level}_${LETKF_GLB10KM_MPITOPOLOGY}
 workdir_control=${PWD}/work/10km_${LETKF_GLB10KM_MPITOPOLOGY}
 observations=${PWD}/obs
 
-if [[ ! -f ${workdir}/prepare_done_${npex}x${npey} ]]; then
+if [[ ! -f ${workdir_control}/prepare_done_${npex}x${npey} ]]; then
     if [[ -d "${workdir}" ]]; then
         if [[ -d "${workdir}.old" ]]; then
             echo "The directory '${workdir}.old' exists.  We will erase it!"
