@@ -52,7 +52,7 @@ if [[ ! -f ${workdir_control}/prepare_done_${npex}x${npey} ]]; then
                                                -splitobs ${splitobs_program}
 elif [[ ! -d ${workdir} ]]; then
     echo "Copy ${workdir_control} to ${workdir}"
-    sscp -r ${workdir_control} ${workdir}
+    sscp --symlinks keep -r ${workdir_control} ${workdir}
 fi
 
 ${scripts_directory}/midas.launch_program -workdir ${workdir} -pgm ${letkf_program} \
