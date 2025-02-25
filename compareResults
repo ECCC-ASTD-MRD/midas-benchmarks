@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -eo pipefail
+
+#echo loading eccc/mrd/rpn/utils/20240912-alpha
+#. r.load.dot eccc/mrd/rpn/utils/20240912-alpha
+echo loading eccc/mrd/rpn/utils/20250129-alpha
+. r.load.dot eccc/mrd/rpn/utils/20250129-alpha
+
+set -u
+
+#npex=${1:-11}
+#npey=${2:-52}
+
+#results=/home/erv000/data_maestro/ppp6/tmp/midas_letkf_workdir_10km_${npex}x${npey}
+results=${1}
+control=${2:-work/10km_48x52}
+
+for file in ${control}/2024091900_000_anal{mean,rms}; do
+    bfile=${file##*/}
+    echo Comparing the file ${file} with ${results}/${bfile}
+    compfst -n -a ${results}/${bfile} -b ${file}
+    echo
+    echo
+done

@@ -21,6 +21,9 @@ midas_version=v_4.0.2-16-g70f6440 ## compiled with '-O 1'
 optimization_level=openblas
 midas_version=v_4.0.2-17-gcbf48c5 ## compiled with '-O 4 -lopenblas'
 
+optimization_level=burponly
+midas_version=v_4.1.0-4-g4466b41
+
 letkf_program=${PWD}/midas/compiledir/midas_abs/midas-letkf_${ORDENV_PLAT}-${midas_version}.Abs
 splitobs_program=${PWD}/midas/compiledir/midas_abs/midas.splitobs_${ORDENV_PLAT}-${midas_version}.Abs
 
@@ -55,5 +58,5 @@ elif [[ ! -d ${workdir} ]]; then
     sscp --symlinks keep -r ${workdir_control} ${workdir}
 fi
 
-${scripts_directory}/midas.launch_program -workdir ${workdir} -pgm ${letkf_program} \
+${scripts_directory}/midas.submit_program -workdir ${workdir} -pgm ${letkf_program} \
                                           -nml ${namelist}    -omp_num_threads 4
