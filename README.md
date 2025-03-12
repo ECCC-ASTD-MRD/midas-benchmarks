@@ -40,3 +40,16 @@ You will surely need to adapt the script to your context.
 You can use the program `midas-energyNorm.Abs` to check the result of
 the execution.  The compilation of that program included.  To launch
 the program, adapt the script `verify` to your needs.
+
+## Check the timings of the execution
+
+To compare the timing of the execution, one can use
+`midas/tools/timingTool/midas.timingTool`:
+```bash
+midas/tools/timingTool/midas.timingTool ${listing}
+```
+
+You can compare two listings with the command:
+```bash
+midas/tools/timingTool/midas.timingTool ${listing} --reference ${reference_listing} --diff
+```
