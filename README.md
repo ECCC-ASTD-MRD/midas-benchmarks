@@ -1,4 +1,4 @@
-=MIDAS benchmark=
+# MIDAS benchmark
 
 This project contains the scripts to launch the several experiments
 needed to evaluate the acceptable spread of the LETKF results in the
