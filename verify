@@ -9,13 +9,13 @@ omp_num_threads=${4:-4}
 
 scripts_directory=midas/tools/midas_scripts
 
-midas_version=v_4.1.0-4-g4466b41
+midas_version=v_4.1.0-51-g50cdc17
 energyNorm_program=${PWD}/midas/compiledir/midas_abs/midas-energyNorm_${ORDENV_PLAT}-${midas_version}.Abs
 
 date=2024091900
 namelist=${PWD}/midas/maestro/suites/midas_system_tests/config/Tests/energyNorm/anal${stats}/nml
 reference=${PWD}/work/10km_48x52/${date}_000_analmean
-states="${PWD}/work/10km_44x52/${date}_000_anal${stats} ${PWD}/work/10km_debug_48x52/${date}_000_anal${stats} ${PWD}/work/10km_flipobs_x_48x52-20241004/${date}_000_anal${stats} ${PWD}/work/10km_flipobs_xy_48x52/${date}_000_anal${stats} ${PWD}/work/10km_flipobs_y_48x52/${date}_000_anal${stats} ${PWD}/work/10km_O1_48x52/${date}_000_anal${stats} ${PWD}/work/10km_O2_48x52/${date}_000_anal${stats} ${PWD}/work/10km_O3_48x52/${date}_000_anal${stats} ${PWD}/work/10km_burponly_48x52/${date}_000_anal${stats}"
+states="${PWD}/work/10km_44x52/${date}_000_anal${stats} ${PWD}/work/10km_debug_48x52/${date}_000_anal${stats} ${PWD}/work/10km_flipobs_x_48x52-20241004/${date}_000_anal${stats} ${PWD}/work/10km_flipobs_xy_48x52/${date}_000_anal${stats} ${PWD}/work/10km_flipobs_y_48x52/${date}_000_anal${stats} ${PWD}/work/10km_O1_48x52/${date}_000_anal${stats} ${PWD}/work/10km_O2_48x52/${date}_000_anal${stats} ${PWD}/work/10km_O3_48x52/${date}_000_anal${stats} ${PWD}/work/10km_burponly_48x52/${date}_000_anal${stats} ${PWD}/work/10km_burponly-cmake_48x52/${date}_000_anal${stats}"
 
 workdir=${PWD}/work/verify-${stats}
 [[ -d "${workdir}" ]] && rm -r ${workdir}
