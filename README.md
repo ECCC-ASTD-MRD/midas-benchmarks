@@ -13,9 +13,7 @@ To compile MIDAS, one must do the commands:
 mkdir -pv midas/compiledir/build
 cd midas/compiledir/build
 source ../../src/config.dot.sh
-cmake ../..
 make -j
-make install
 ```
 
 The programs will be installed under `midas/compiledir/midas_abs`.
@@ -23,8 +21,7 @@ The programs will be installed under `midas/compiledir/midas_abs`.
 ### Note on the MIDAS code
 
 This particular project is using a special version of MIDAS which
-removes the dependency on SQLite files.  It is the branch
-`for-benchmark`.
+removes the dependency on SQLite files.  It is the branch `benchmark`.
 
 ## Launching the program
 

@@ -48,4 +48,5 @@ elif [[ ! -d ${workdir} ]]; then
 fi
 
 ${scripts_directory}/midas.submit_program -workdir ${workdir} -pgm ${letkf_program} \
-                                          -nml ${namelist}    -omp_num_threads 4
+                                          -nml ${namelist}    -omp_num_threads 4    \
+                                          -supercomputer underhill
