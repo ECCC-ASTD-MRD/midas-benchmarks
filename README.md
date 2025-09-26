@@ -38,12 +38,15 @@ make install
 ## Build MIDAS
 
 ```bash
-git clone git@github.com:ECCC-ASTD-MRD/midas-src.git
-cd gem
+git clone git@github.com:ECCC-ASTD-MRD/midas-src.git midas
+cd midas
 git checkout benchmark
-./download-dbase.sh .
-./download-dbase-benchmarks.sh .
+
+## instructions to download the data
+
+## instructions to load the compiling environment
 . ./.common_setup [intel|gnu|nvhpc]
+
 mkdir build
 cd build
 cmake ..
@@ -57,27 +60,18 @@ make work
 cd ../${MIDAS_WORK}
 ```
 
-* This will give you the possible CPU decomposition for the MIDAS LetKF configuration:
+* This will give you the possible CPU decomposition for the MIDAS LetKF global 10km configuration:
 
-```
-findtopo -npex_low 20 -npex_high 250 -npey_low 20 -npey_high 200 -corespernode 80 -nml $GEM_WORK/configurations/GEM_cfgs_GY_4km/cfg_0000/gem_settings.nml > topo.txt
-```
-
-## Run preparation script
-
-```
-runprep.sh -dircfg configurations/GEM_cfgs_GY_4km
+```bash
+midas/tools/midas_scripts/midas.mpiTopoFinder --ni 3124 --nj 2084          \
+               --min-tasks "minimum total number of MPI tasks to consider" \
+               --max-tasks "maximum total number of MPI tasks to consider"
 ```
 
 * Run program (or submit to queing system):
 
 The -cpus parameters defines the mpi topology and the openmp number of
 threads [X MPI]x[Y MPI]x[OMP threads] (ie: 61x20x8).
-
-This topology is used for 2 simultaneous model run (Yin+Yang), meaning you
-will have to use double this number of CPU for the submision/run itself.
-
-In the below example, 9760 cores are needed per sub run, so a total of 19520 cores will be needed.
 
 ```
 runmod.sh -dircfg configurations/GEM_cfgs_GY_4km -ptopo 61x20x8
