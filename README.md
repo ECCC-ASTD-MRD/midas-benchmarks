@@ -1,8 +1,8 @@
-# GEM Benchmarking
+# MIDAS Benchmarking
 
-Welcome to the GEM Benchmarking System!
+Welcome to the MIDAS Data Assimilation Benchmarking System!
 
-You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/gem
+You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/midas-src
 
 # Requirements
 
@@ -10,7 +10,8 @@ You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/ge
 * An MPI implementation such as OpenMPI, MPICH or Intel MPI (with development package)
 * OpenMP support
 * BLAS, LAPACK or equivalent mathematical/scientific library (ie: MKL), with development package
-* fftw3 library (with development package) (tested with 3.3.10)
+* RTTOV version 13 (where to download the library?)
+* SQLite with development package (version >= 3.26.0)
 * CMake (version >= 3.20)
 
 # Build and run steps
@@ -33,25 +34,12 @@ cmake -DCMAKE_INSTALL_PREFIX=[rmn install directory] ..
 make install
 ```
 
-## Build verification tool (sverif)
+## Build MIDAS
 
 ```bash
-git clone git@github.com:ECCC-ASTD-MRD/sverif.git
-cd sverif
-mkdir build
-cd build
-cmake -Drmn_ROOT=[rmn install directory] -DCMAKE_INSTALL_PREFIX=[sverif install directory] ..
-make install
-export PATH=[sverif install directory]/bin:$PATH
-```
-
-## Build model (GEM)
-
-```bash
-git clone git@github.com:ECCC-ASTD-MRD/gem.git
+git clone git@github.com:ECCC-ASTD-MRD/midas-src.git
 cd gem
-git checkout benchmark-5.3
-git submodule update --init --recursive
+git checkout benchmark
 ./download-dbase.sh .
 ./download-dbase-benchmarks.sh .
 . ./.common_setup [intel|gnu|nvhpc]
@@ -62,14 +50,13 @@ make -j 5
 make work
 ```
 
-## Run model (GEM)
+## Run MIDAS (LetKF)
 
 ```bash
-cd ../$GEM_WORK
+cd ../${MIDAS_WORK}
 ```
 
-* This will give you the possible CPU decomposition for the GEM_cfgs_GY_4km
-model configuration:
+* This will give you the possible CPU decomposition for the MIDAS LetKF configuration:
 
 ```
 findtopo -npex_low 20 -npex_high 250 -npey_low 20 -npey_high 200 -corespernode 80 -nml $GEM_WORK/configurations/GEM_cfgs_GY_4km/cfg_0000/gem_settings.nml > topo.txt
@@ -81,7 +68,7 @@ findtopo -npex_low 20 -npex_high 250 -npey_low 20 -npey_high 200 -corespernode 8
 runprep.sh -dircfg configurations/GEM_cfgs_GY_4km
 ```
 
-* Run model (or submit to queing system):
+* Run program (or submit to queing system):
 
 The -cpus parameters defines the mpi topology and the openmp number of
 threads [X MPI]x[Y MPI]x[OMP threads] (ie: 61x20x8).
@@ -105,7 +92,7 @@ cd $GEM_WORK
 runmod.sh -dircfg configurations/GEM_cfgs_GY_4km -ptopo 61x20x8
 ```
 
-## Run verification (sverif)
+## Run verification
 
 * This script will provide a PASS or FAIL rating
 
@@ -117,26 +104,11 @@ gem_sverif.sh -p $GEM_WORK -f dp2020022915-000-000_006
 * Expected output
 
 ```bash
-(INFO) Run configuration found (GEM_cfgs_GY_4km-5.3.0-a11)
-sverif_eval.Abs GZ 500 006 GEM/work-rhel-8-icelake-64-intel-2021.5.0//RUNMOD/output/cfg_0000/laststep_0000000180/000-000/dp2020022915-000-000_006 GEM/work-rhel-8-icelake-64-intel-2021.5.0/sverif/GEM_cfgs_GY_4km-5.3.0-a11
-PASS T1  (sverif_eval) GZ [ 500mb;    6h; CI=0.01]
-PASS NT1 (sverif_eval) GZ [ 500mb;    6h; CI=0.01]
-PASS NT5 (sverif_eval) GZ [ 500mb;    6h; CI=0.01]
-PASS R   (sverif_eval) GZ [ 500mb;    6h; CI=0.01]
-PASS T1  (sverif_eval) TT [ 850mb;    6h; CI=0.01]
-PASS NT1 (sverif_eval) TT [ 850mb;    6h; CI=0.01]
-PASS NT5 (sverif_eval) TT [ 850mb;    6h; CI=0.01]
-PASS R   (sverif_eval) TT [ 850mb;    6h; CI=0.01]
+(INFO) Run configuration found (....)
 (INFO) Passed (passed 8/8)
 ```
 
-# Detailed information on Packages
+# Reference
 
-## Building GEM and launching on your platform
-
-* [Building GEM](README-gem.md#outside-cmc-external-users)
-* [Running GEM](README-gem.md#running-gem)
-
-## Result validation
-
-* [Building sverif](https://github.com/ECCC-ASTD-MRD/sverif/blob/main/README.md)
+MIDAS stands for Modular and Integrated Data Assimilation System and is described in this publication:
+[Buehner, M., Caron, J.-F., Lapalme, E., Caya, A., Du, P., Rochon, Y., Skachko, S., Bani Shahabadi, M., Heilliette, S., Deshaies-Jacques, M., Chang, W., and Sitwell, M.: The Modular and Integrated Data Assimilation System at Environment and Climate Change Canada (MIDAS v3.9.1), Geosci. Model Dev., 18, 1–18, https://doi.org/10.5194/gmd-18-1-2025, 2025](https://doi.org/10.5194/gmd-18-1-2025).
