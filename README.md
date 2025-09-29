@@ -113,18 +113,33 @@ export CMCCONST=.
 export TMG_ON=YES
 export OMP_STACKSIZE=4G ## Or any other value for your system
 
-${MIDAS_WORK}
+cd ${MIDAS_WORK}
+```
 
+With `${letkf_program}` as the path to the program `midas-letkf.Abs`
+that has been compiled at the build step, launch the program with:
+
+```bash
 mpirun -n $((npex*npey)) ${letkf_program}
 ```
 
 # Run verification
 
-* This script will provide a PASS or FAIL rating
+Verify the results with the following command providing
+`${eneryNorm_program}` as the path to the program
+`midas-eneryNorm.Abs`.  It is possible to provide results from several
+executions with argument `-states`.  The variable
+`{MIDAS_VERIFY_WQRKDIR}` is the path to the working directory the
+program can use.
+
+This script will provide a PASS or FAIL rating
 
 ```bash
-cd ..
-gem_sverif.sh -p $GEM_WORK -f dp2020022915-000-000_006
+./verify -pgm ${eneryNorm_program} -date 2024091900                    \
+         -nml ${PWD}/midas/maestro/suites/midas_system_tests/config/Tests/energyNorm/analmean/nml \
+         -reference ${MIDAS_ARCHIVE}/reference/2024091900_000_analmean \
+         -states ${MIDAS_WORK}/2024091900_000_analmean                 \
+         -workdir ${MIDAS_VERIFY_WQRKDIR}
 ```
 
 * Expected output
