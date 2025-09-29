@@ -5,10 +5,10 @@ set -euo pipefail
 MIDAS_DBASE_URL=http://collaboration.cmc.ec.gc.ca/science/outgoing/goas/
 
 declare -A archiveDatabase
-archiveDatabase[midas_observations.tar.gz]="9c0f114475aa9c0a3f84c4c5ab0865df"
-archiveDatabase[midas_constants.tar.gz]="424a7404e26db18585390aff730e2f83"
-archiveDatabase[midas_results.tar.gz]="2822c5c45252b3795efdd697a558b42b"
-#archiveDatabase[midas_ensemble.tar.gz]="thisisamd5sum"
+archiveDatabase[midas_observations.tar.gz]="9c0f114475aa9c0a3f84c4c5ab0865df observations"
+archiveDatabase[midas_constants.tar.gz]="424a7404e26db18585390aff730e2f83 constants"
+archiveDatabase[midas_results.tar.gz]="2822c5c45252b3795efdd697a558b42b reference"
+#archiveDatabase[midas_ensemble.tar.gz]="thisisamd5sum ensemble"
 
 printUsage() {
     echo -e "Download a sample database of data files needed to run MIDAS benchmarks."
@@ -26,7 +26,7 @@ checkMd5() {
     typeset -r md5=$(md5sum ${archiveName} | cut -d' ' -f1)
 
     typeset -r fileName=$(basename ${archiveName})
-    typeset -r md5_reference=${archiveDatabase[${fileName}]}
+    typeset -r md5_reference=$(echo ${archiveDatabase[${fileName}]} | cut -d' ' -f1)
 
     [[ "${md5}" = "${md5_reference}" ]]
 } ## End of function 'checkMd5()'
@@ -84,16 +84,33 @@ for archiveName in "${!archiveDatabase[@]}"; do
 done ## End of 'for archiveName in "${!archiveDatabase[@]}"'
 
 for archiveName in "${!archiveDatabase[@]}"; do
-    archiveFullName=${archiveSource}${archiveName}
-    echo "Deflating ${archiveFullName} to ${archivePath}"
-    tar xzvf ${archiveFullName} -C ${archivePath}
+    destination=${archivePath}/$(echo ${archiveDatabase[${fileName}]} | cut -d' ' -f2)
 
-    ## If this file exists, it means it has been downloaded and can be
-    ## erased.
-    archiveDestinationName=${archivePath}/${archiveName}
-    if [[ -f "${archiveDestinationName}" ]]; then
-        echo "Erase ${archiveDestinationName}"
-        rm ${archiveDestinationName}
+    if [[ ! -d "${destination}" ]]; then
+        echo "Create directory ${destination}"
+        mkdir ${destination}
+    fi
+
+    if [[ "${archiveName}" = *.tar.gz || "${archiveName}" = *.tar ]]; then
+        echo "Deflate ${archiveFullName} to ${archivePath}"
+        if [[ "${archiveName}" = *.tar.gz ]]; then
+            decompress_option=z
+        else
+            decompress_option=
+        fi
+
+        tar x${decompress_option}vf ${archiveFullName} -C ${destination}
+
+        ## If this file exists, it means it has been downloaded and can be
+        ## erased.
+        archiveDestinationName=${destination}/${archiveName}
+        if [[ -f "${archiveDestinationName}" ]]; then
+            echo "Erase ${archiveDestinationName}"
+            rm ${archiveDestinationName}
+        fi
+    else
+        echo "Copy ${archiveFullName} to ${destination}"
+        cp ${archiveFullName} ${destination}
     fi
 done
 
