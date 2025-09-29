@@ -6,7 +6,7 @@ MIDAS_DBASE_URL=http://collaboration.cmc.ec.gc.ca/science/outgoing/goas/
 
 declare -A archiveDatabase
 archiveDatabase[midas_observations.tar.gz]="9c0f114475aa9c0a3f84c4c5ab0865df observations"
-archiveDatabase[midas_constants.tar.gz]="424a7404e26db18585390aff730e2f83 constants"
+archiveDatabase[midas_constants.tar.gz]="78d013ee3f42cc846e7733f13e6b1553 constants"
 archiveDatabase[midas_results.tar.gz]="2822c5c45252b3795efdd697a558b42b reference"
 #archiveDatabase[midas_ensemble.tar.gz]="thisisamd5sum ensemble"
 
@@ -84,7 +84,7 @@ for archiveName in "${!archiveDatabase[@]}"; do
 done ## End of 'for archiveName in "${!archiveDatabase[@]}"'
 
 for archiveName in "${!archiveDatabase[@]}"; do
-    destination=${archivePath}/$(echo ${archiveDatabase[${fileName}]} | cut -d' ' -f2)
+    destination=${archivePath}/$(echo ${archiveDatabase[${archiveName}]} | cut -d' ' -f2)
 
     if [[ ! -d "${destination}" ]]; then
         echo "Create directory ${destination}"
@@ -92,14 +92,14 @@ for archiveName in "${!archiveDatabase[@]}"; do
     fi
 
     if [[ "${archiveName}" = *.tar.gz || "${archiveName}" = *.tar ]]; then
-        echo "Deflate ${archiveFullName} to ${archivePath}"
+        echo "Deflate ${archiveName} to ${destination}"
         if [[ "${archiveName}" = *.tar.gz ]]; then
             decompress_option=z
         else
             decompress_option=
         fi
 
-        tar x${decompress_option}vf ${archiveFullName} -C ${destination}
+        tar x${decompress_option}vf ${archiveSource}/${archiveName} -C ${destination}
 
         ## If this file exists, it means it has been downloaded and can be
         ## erased.
@@ -108,9 +108,6 @@ for archiveName in "${!archiveDatabase[@]}"; do
             echo "Erase ${archiveDestinationName}"
             rm ${archiveDestinationName}
         fi
-    else
-        echo "Copy ${archiveFullName} to ${destination}"
-        cp ${archiveFullName} ${destination}
     fi
 done
 
