@@ -7,6 +7,7 @@ MIDAS_DBASE_URL=http://collaboration.cmc.ec.gc.ca/science/outgoing/goas/
 declare -A archiveDatabase
 archiveDatabase[midas_observations.tar.gz]="9c0f114475aa9c0a3f84c4c5ab0865df"
 archiveDatabase[midas_constants.tar.gz]="424a7404e26db18585390aff730e2f83"
+archiveDatabase[midas_results.tar.gz]="2822c5c45252b3795efdd697a558b42b"
 #archiveDatabase[midas_ensemble.tar.gz]="thisisamd5sum"
 
 printUsage() {
