@@ -15,7 +15,7 @@ You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/mi
 * SQLite with development package (version >= 3.26.0)
 * CMake (version >= 3.20)
 
-# Build and run steps
+# Build MIDAS
 
 ## Compiler specifics
 
@@ -35,7 +35,7 @@ cmake -DCMAKE_INSTALL_PREFIX=[rmn install directory] ..
 make install
 ```
 
-## Build MIDAS
+## Build
 
 ```bash
 git clone git@github.com:ECCC-ASTD-MRD/midas-src.git midas
@@ -54,13 +54,21 @@ make -j 5
 make work
 ```
 
-## Run MIDAS (LetKF)
+# Run MIDAS (LetKF)
 
+## Download database
+
+The variable `${MIDAS_ARCHIVE}` should be set to a directory
+where all the files will be downloaded on your system.
+
+Download the data needed to run `midas-letkf`:
 ```bash
-cd ../${MIDAS_WORK}
+./download_dbase.sh ${MIDAS_ARCHIVE}
 ```
 
-* This will give you the possible CPU decomposition for the MIDAS LetKF global 10km configuration:
+## Choice of CPU decomposition
+
+This will give you the possible CPU decomposition for the MIDAS LetKF global 10km configuration:
 
 ```bash
 midas/tools/midas_scripts/midas.mpiTopoFinder --ni 3124 --nj 2084          \
@@ -68,26 +76,43 @@ midas/tools/midas_scripts/midas.mpiTopoFinder --ni 3124 --nj 2084          \
                --max-tasks "maximum total number of MPI tasks to consider"
 ```
 
-* Run program (or submit to queing system):
+## Prepare working directory
 
-The -cpus parameters defines the mpi topology and the openmp number of
-threads [X MPI]x[Y MPI]x[OMP threads] (ie: 61x20x8).
-
-```
-runmod.sh -dircfg configurations/GEM_cfgs_GY_4km -ptopo 61x20x8
-```
-
-* If you need a job script so you can submit the job to a queuing system, make sure you define the GOAS_SCRIPT
-variable and load the common setup before running the runmod.sh command:
+The variable `${MIDAS_WORK}` should be set to the working directory
+where the program will run.  The values `${npex}` and `${npey}` are
+the MPI decomposition found at the previous step.  And the
+`${splitobs_program}` is the path to the program `midas.splitobs.Abs`
+that has been compiled at the build step.
 
 ```bash
-cd [gem src path]
-. ./.common_setup [intel|gnu|nvhpc]
-cd $GEM_WORK
-runmod.sh -dircfg configurations/GEM_cfgs_GY_4km -ptopo 61x20x8
+midas/tools/midas_scripts/midas.prepare_workdir -workdir ${MIDAS_WORK}                      \
+                                                -ensemble ${MIDAS_ARCHIVE}/ensemble         \
+                                                -observations ${MIDAS_ARCHIVE}/observations \
+                                                -constants ${MIDAS_ARCHIVE}/constants       \
+                                                -npex ${npex} -npey ${npey}                 \
+                                                -splitobs ${splitobs_program}
 ```
 
-## Run verification
+You need to rerun this preparation each time you change the CPU
+decomposition (`${npex}` or `${npey}`).
+
+## Run program (or submit to queuing system):
+
+Before running to program, make sure to set those variables:
+
+```bash
+ulimit -c unlimited
+
+export CMCCONST=.
+export TMG_ON=YES
+export OMP_STACKSIZE=4G ## Or any other value for your system
+
+${MIDAS_WORK}
+
+mpirun -n $((npex*npey)) ${letkf_program}
+```
+
+# Run verification
 
 * This script will provide a PASS or FAIL rating
 
