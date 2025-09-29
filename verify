@@ -54,7 +54,7 @@ cd ${workdir}
 
 if [[ -n "${nml}" ]]; then
     if [[ -f "${nml}" ]]; then
-        say "We will replace 'flnml' in the working directory with ${nml}"
+        say "Importing the namelist ${nml} in the working directory"
         cp ${nml} flnml
     else
         die "The namelist given with option '-nml', ${nml}, does not exist."
@@ -92,11 +92,46 @@ export MIDAS_DATE=${date}
 export FOR_DUMP_CORE_FILE=
 
 say "Start of ${energyNorm_program} at $(date +%Y%m%d:%H:%M:%S.%N)"
+say "The listing will be available in the file ${PWD}/listing"
 
 SECONDS=0
 
-mpirun -n 1 ${energyNorm_program}
+mpirun -n 1 ${energyNorm_program} > listing
 
 say "End of ${energyNorm_program} in ${SECONDS} seconds at $(date +%Y%m%d:%H:%M:%S.%N)"
 
 ## Parse the output file 'energyNorm_ascii' to detect if tests pass or not
+energyNorm_output=energyNorm_ascii
+energyNorm_threshold=1.0
+
+say "Verifying the results from the file ${PWD}/${energyNorm_output}"
+
+processLine=false
+someFailed=false
+while read -u3 line; do
+    if [[ "${line}" =~ ^fileName ]]; then
+        processLine=true
+    elif [[ "${processLine}" = true ]]; then
+        fileName=$(echo ${line} | awk '{print $1}')
+        totalEnergy=$(echo ${line} | awk '{print $2}')
+
+        if (( $(echo "${totalEnergy} > ${energyNorm_threshold}" |bc -l) )); then
+            result=FAIL
+            someFailed=true
+        else
+            result=pass
+        fi
+
+        say "${result} for ${fileName} (${totalEnergy} vs ${energyNorm_threshold})"
+    fi
+done 3< ${energyNorm_output}
+
+if [[ "${processLine}" = false ]]; then
+    die "Something wrong happened while processing ${PWD}/${energyNorm_output}"
+else
+    if [[ "${someFailed}" = true ]]; then
+        say "The results have been verified and some failed!"
+    else
+        say "The results have been verified and they all pass successfully!"
+    fi
+fi

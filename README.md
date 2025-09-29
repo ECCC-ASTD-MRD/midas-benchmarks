@@ -142,11 +142,16 @@ This script will provide a PASS or FAIL rating
          -workdir ${MIDAS_VERIFY_WQRKDIR}
 ```
 
+This process is requesting around 160 GB of RAM to run.
+
 * Expected output
 
 ```bash
-(INFO) Run configuration found (....)
-(INFO) Passed (passed 8/8)
+verify: pass for ${MIDAS_WORK}/2024091900_000_analmean
+```
+or
+```bash
+verify: FAIL for ${MIDAS_WORK}/2024091900_000_analmean
 ```
 
 # Reference
