@@ -71,7 +71,13 @@ if [[ ! -d "${archivePath}" ]]; then
 fi
 
 if [[ $# -eq 2 ]]; then
-    if [[ ! -r "$2" ]]; then
+    if [[ "${2}" =~ ^[0-9a-zA-Z_-]+: ]]; then
+        archiveSource=
+        for archiveName in "${!archiveDatabase[@]}"; do
+            echo Downloading ${2}/${archiveName} to ${archiveName}
+            scp ${2}/${archiveName} .
+        done
+    elif [[ ! -r "$2" ]]; then
         echo "Can't read ${2} !"
         exit 1
     else
