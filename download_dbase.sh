@@ -8,7 +8,7 @@ declare -A archiveDatabase
 archiveDatabase[midas_observations.tar.gz]="9c0f114475aa9c0a3f84c4c5ab0865df observations"
 archiveDatabase[midas_constants.tar.gz]="78d013ee3f42cc846e7733f13e6b1553 constants"
 archiveDatabase[midas_results.tar.gz]="2822c5c45252b3795efdd697a558b42b reference"
-#archiveDatabase[midas_ensemble.tar]=" ensemble"
+#archiveDatabase[midas_ensemble.tar]="75c54da9ac1f41fa314f3306bfab5842 ensemble"
 archiveDatabase[midas_ensemble_0.tar]="b76118d94c50cbeed74a186eeffe4833 ensemble"
 archiveDatabase[midas_ensemble_1.tar]="6d8537671c87cdba618b22a45600c3d9 ensemble"
 archiveDatabase[midas_ensemble_2.tar]="29e8f402cc97ee3e2922eab79658b110 ensemble"
