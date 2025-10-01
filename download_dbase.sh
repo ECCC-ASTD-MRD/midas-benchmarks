@@ -24,9 +24,7 @@ printUsage() {
     echo -e "Download a sample database of data files needed to run MIDAS benchmarks."
     echo -e "If a local database archive is provided, use it instead"
     echo -e "Usage:"
-    echo -e "./$(basename $0) <MIDAS-GIT-DIR> [Local MIDAS dbase archive path]\n"
-    echo -e "Usually, MIDAS-GIT-DIR is the current directory, so use:"
-    echo -e "./$(basename $0) ."
+    echo -e "./$(basename $0) <MIDAS-DATABASE-STORAGE> [Local MIDAS dbase archive path]\n"
 } ## End of function 'printUsage()'
 
 checkMd5() {
