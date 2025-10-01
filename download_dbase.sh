@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-MIDAS_DBASE_URL=http://collaboration.cmc.ec.gc.ca/science/outgoing/goas/
+MIDAS_DBASE_URL=http://collaboration.cmc.ec.gc.ca/science/outgoing/midas-benchmarks
 
 declare -A archiveDatabase
 archiveDatabase[midas_observations.tar.gz]="9c0f114475aa9c0a3f84c4c5ab0865df observations"
