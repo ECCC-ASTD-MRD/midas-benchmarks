@@ -89,8 +89,8 @@ fi ## End of 'else' associated to 'if [[ $# -eq 2 ]]'
 
 if [[ "${DOWNLOAD_DBASE_CHECK_MD5SUM:-yes}" = yes ]]; then
     for archiveName in "${!archiveDatabase[@]}"; do
-        echo "Checking md5sum of ${archiveSource}/${archiveName}"
-        if checkMd5 ${archiveSource}/${archiveName}; then
+        echo "Checking md5sum of ${archiveSource}${archiveName}"
+        if checkMd5 ${archiveSource}${archiveName}; then
             echo "    MD5 check OK"
         else
             echo "The MD5 does not match what was expected.  The file might be corrupted."
@@ -115,7 +115,7 @@ for archiveName in "${!archiveDatabase[@]}"; do
             decompress_option=
         fi
 
-        tar x${decompress_option}vf ${archiveSource}/${archiveName} -C ${destination}
+        tar x${decompress_option}vf ${archiveSource}${archiveName} -C ${destination}
 
         ## If this file exists, it means it has been downloaded and can be
         ## erased.
