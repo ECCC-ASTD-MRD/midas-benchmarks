@@ -66,6 +66,11 @@ Download the data needed to run `midas-letkf`:
 ./download_dbase.sh ${MIDAS_ARCHIVE}
 ```
 
+There will be an automatic check of `md5sum`s for each downloaded
+file.  Since this step can be quite long, you can skip that step by
+setting the environment variable `DOWNLOAD_DBASE_CHECK_MD5SUM` to
+`no`.
+
 ## Choice of CPU decomposition
 
 This will give you the possible CPU decomposition for the MIDAS LetKF global 10km configuration:

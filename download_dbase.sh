@@ -89,15 +89,17 @@ else ## End of 'if [[ $# -eq 2 ]]'
     done
 fi ## End of 'else' associated to 'if [[ $# -eq 2 ]]'
 
-for archiveName in "${!archiveDatabase[@]}"; do
-    echo "Checking md5sum of ${archiveSource}/${archiveName}"
-    if checkMd5 ${archiveSource}/${archiveName}; then
-        echo "    MD5 check OK"
-    else
-        echo "The MD5 does not match what was expected.  The file might be corrupted."
-        exit 1
-    fi
-done ## End of 'for archiveName in "${!archiveDatabase[@]}"'
+if [[ "${DOWNLOAD_DBASE_CHECK_MD5SUM:-yes}" = yes ]]; then
+    for archiveName in "${!archiveDatabase[@]}"; do
+        echo "Checking md5sum of ${archiveSource}/${archiveName}"
+        if checkMd5 ${archiveSource}/${archiveName}; then
+            echo "    MD5 check OK"
+        else
+            echo "The MD5 does not match what was expected.  The file might be corrupted."
+            exit 1
+        fi
+    done ## End of 'for archiveName in "${!archiveDatabase[@]}"'
+fi
 
 for archiveName in "${!archiveDatabase[@]}"; do
     destination=${archivePath}/$(echo ${archiveDatabase[${archiveName}]} | cut -d' ' -f2)
