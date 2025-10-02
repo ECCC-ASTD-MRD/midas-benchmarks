@@ -23,6 +23,8 @@ archiveDatabase[midas_ensemble_9.tar]="ad2fa9f002cde53453221ade17ba310d ensemble
 printUsage() {
     echo -e "Download a sample database of data files needed to run MIDAS benchmarks."
     echo -e "If a local database archive is provided, use it instead"
+    echo -e "The environment variable 'DOWNLOAD_DBASE_TRANSFER_COMMAND' is used"
+    echo -e "to set the transfer command for remote archive.  It defaults to 'scp'."
     echo -e "Usage:"
     echo -e "./$(basename $0) <MIDAS-DATABASE-STORAGE> [Local MIDAS dbase archive path]\n"
 } ## End of function 'printUsage()'
@@ -72,7 +74,7 @@ if [[ $# -eq 2 ]]; then
         archiveSource=
         for archiveName in "${!archiveDatabase[@]}"; do
             echo Downloading ${2}/${archiveName} to ${archiveName}
-            scp ${2}/${archiveName} .
+            ${DOWNLOAD_DBASE_TRANSFER_COMMAND:-scp} ${2}/${archiveName} .
         done
     elif [[ ! -r "$2" ]]; then
         echo "Can't read ${2} !"
