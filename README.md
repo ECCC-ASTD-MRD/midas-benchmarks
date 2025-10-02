@@ -126,12 +126,12 @@ the MPI decomposition found at the previous step.  And the
 that has been compiled at the build step.
 
 ```bash
-midas/tools/midas_scripts/midas.prepare_workdir -workdir ${MIDAS_WORK}                      \
-                                                -ensemble ${MIDAS_ARCHIVE}/ensemble         \
+midas/tools/midas_scripts/midas.prepare_workdir -workdir      ${MIDAS_WORK}                 \
+                                                -ensemble     ${MIDAS_ARCHIVE}/ensemble     \
                                                 -observations ${MIDAS_ARCHIVE}/observations \
-                                                -constants ${MIDAS_ARCHIVE}/constants       \
-                                                -npex ${npex} -npey ${npey}                 \
-                                                -splitobs ${splitobs_program}
+                                                -constants    ${MIDAS_ARCHIVE}/constants    \
+                                                -splitobs     ${splitobs_program}           \
+                                                -npex ${npex} -npey ${npey}
 ```
 
 You need to rerun this preparation each time you change the CPU
