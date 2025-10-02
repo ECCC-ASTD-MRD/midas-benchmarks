@@ -62,6 +62,13 @@ Insérer les commandes pour compiler!
 
 Insérer les commandes pour compiler!
 
+### `cclargs`
+
+Les scripts `midas.prepare_workdir` et `verify` utilisent de
+`cclargs`.  Est-ce compliqué d'ajouter cet outil dans le package?
+
+Je peux aussi convertir la logique de `cclargs` à du `bash` standard.
+
 ## MIDAS
 
 Ces commandes doivent être revues!
