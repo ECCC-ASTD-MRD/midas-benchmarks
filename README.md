@@ -10,7 +10,7 @@ You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/mi
 * An MPI implementation such as OpenMPI, MPICH or Intel MPI (with development package)
 * OpenMP support
 * BLAS, LAPACK or equivalent mathematical/scientific library (ie: MKL), with development package and thread-safe support
-* RTTOV version 13 (where to download the library?)
+* RTTOV version 13
   * You can get this library by going to [NWP SAF | Numerical Weather Prediction Satellite Application Facility](https://nwp-saf.eumetsat.int/site/), create an account and download it.
 * SQLite with development package (version >= 3.26.0)
 * CMake (version >= 3.20)
@@ -66,6 +66,11 @@ Download the data needed to run `midas-letkf`:
 ./download_dbase.sh ${MIDAS_ARCHIVE}
 ```
 
+There will be an automatic check of `md5sum`s for each downloaded
+file.  Since this step can be quite long, you can skip that step by
+setting the environment variable `DOWNLOAD_DBASE_CHECK_MD5SUM` to
+`no`.
+
 ## Choice of CPU decomposition
 
 This will give you the possible CPU decomposition for the MIDAS LetKF global 10km configuration:
@@ -73,7 +78,8 @@ This will give you the possible CPU decomposition for the MIDAS LetKF global 10k
 ```bash
 midas/tools/midas_scripts/midas.mpiTopoFinder --ni 3124 --nj 2084          \
                --min-tasks "minimum total number of MPI tasks to consider" \
-               --max-tasks "maximum total number of MPI tasks to consider"
+               --max-tasks "maximum total number of MPI tasks to consider" \
+               --max-diff "maximum difference of grid points per MPI task allowed (in percentage) between the regular distribution and the last MPI task"
 ```
 
 ## Prepare working directory
