@@ -79,7 +79,7 @@ This will give you the possible CPU decomposition for the MIDAS LetKF global 10k
 midas/tools/midas_scripts/midas.mpiTopoFinder --ni 3124 --nj 2084          \
                --min-tasks "minimum total number of MPI tasks to consider" \
                --max-tasks "maximum total number of MPI tasks to consider" \
-               --max-diff "maximum difference of grid points per MPI task allowed (in percentage) between the regular distribution and the last MPI task"
+               --max-diff  "maximum difference of grid points per MPI task allowed (in percentage) between the regular distribution and the last MPI task"
 ```
 
 ## Prepare working directory
@@ -120,6 +120,13 @@ With `${letkf_program}` as the path to the program `midas-letkf.Abs`
 that has been compiled at the build step, launch the program with:
 
 ```bash
+cat > ptopo_nml <<EOF
+ &ptopo
+  npex=${npex}
+  npey=${npey}
+/
+EOF
+
 mpirun -n $((npex*npey)) ${letkf_program}
 ```
 
