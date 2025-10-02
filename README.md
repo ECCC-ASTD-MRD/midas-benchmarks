@@ -84,6 +84,11 @@ cmake ..
 make -j
 ```
 
+From this project, there will be three programs compiled:
+ * `midas.splitobs.Abs`: needed in the preprocessing step
+ * `midas-letkf.Abs`: HPC benchmarking program
+ * `midas-energyNorm.Abs`: needed in the evaluation step
+
 # Run MIDAS (LetKF)
 
 ## Download database
@@ -91,7 +96,7 @@ make -j
 The variable `${MIDAS_ARCHIVE}` should be set to a directory
 where all the files will be downloaded on your system.
 
-Download the data needed to run `midas-letkf`:
+Download the data needed to run `midas-letkf.Abs`:
 ```bash
 ./download_dbase.sh ${MIDAS_ARCHIVE}
 ```
