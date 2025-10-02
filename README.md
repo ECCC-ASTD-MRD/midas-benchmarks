@@ -14,6 +14,7 @@ You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/mi
   * You can get this library by going to [NWP SAF | Numerical Weather Prediction Satellite Application Facility](https://nwp-saf.eumetsat.int/site/), create an account and download it.
 * SQLite with development package (version >= 3.26.0)
 * CMake (version >= 3.20)
+* Python 3
 
 # Build MIDAS
 
