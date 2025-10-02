@@ -43,21 +43,30 @@ make install
 
 ### rpn_comm
 
+Insérer les commandes pour compiler!
+
 ### VGrid
 
-### `burp-tools'
+Insérer les commandes pour compiler!
+
+### `burp-tools`
+
+Insérer les commandes pour compiler!
 
 ### RPN-SI `random`
 
+Insérer les commandes pour compiler!
+
 ### hpcoperf
 
-## Build MIDAS
+Insérer les commandes pour compiler!
+
+## MIDAS
 
 Ces commandes doivent être revues!
 
 ```bash
-## instructions to load the compiling environment
-. ./load_compiler [intel|gnu|nvhpc]
+## load the compiling environment
 
 mkdir midas/build
 cd midas/build
@@ -120,6 +129,8 @@ decomposition (`${npex}` or `${npey}`).
 Before running to program, make sure to set those variables:
 
 ```bash
+## load the MPI environment
+
 ulimit -c unlimited
 
 export CMCCONST=.
@@ -155,7 +166,7 @@ program can use.
 This script will provide a PASS or FAIL rating
 
 ```bash
-. ./load_compiler [intel|gnu|nvhpc]
+## load the MPI environment
 
 ./verify -pgm ${eneryNorm_program} -date 2024091900                    \
          -nml ${PWD}/midas/maestro/suites/midas_system_tests/config/Tests/energyNorm/analmean/nml \
@@ -166,14 +177,14 @@ This script will provide a PASS or FAIL rating
 
 This process is requesting around 160 GB of RAM to run.
 
-* Expected output
+## Expected output
 
 ```bash
-verify: pass for ${MIDAS_WORK}/2024091900_000_analmean
+        pass for ${MIDAS_WORK}/2024091900_000_analmean
 ```
 or
 ```bash
-verify: FAIL for ${MIDAS_WORK}/2024091900_000_analmean
+        FAIL for ${MIDAS_WORK}/2024091900_000_analmean
 ```
 
 # Reference
