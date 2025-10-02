@@ -2,7 +2,7 @@
 
 Welcome to the MIDAS Data Assimilation Benchmarking System!
 
-You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/midas-src
+You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/midas-benchmarks
 
 # Requirements
 
@@ -19,10 +19,16 @@ You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/mi
 
 ## Compiler specifics
 
-* Compiler specific definitions and flags are defined within the ```cmake_rpn``` submodule of each code repository. If you need to change or add any,
-you can add or modify the rules into `[git source path]/cmake_rpn/modules/ec_compiler_presets/default/[architecture]/`
+Compiler specific definitions and flags are defined within the
+```cmake_rpn``` submodule of each code repository. If you need to
+change or add any, you can add or modify the rules into `[git source
+path]/cmake_rpn/modules/ec_compiler_presets/default/[architecture]/`
 
-## Build base library (librmn)
+## Build base libraries
+
+### LibRMN
+
+Ces commandes doivent être revues!
 
 ```bash
 git clone git@github.com:ECCC-ASTD-MRD/librmn.git
@@ -35,23 +41,30 @@ cmake -DCMAKE_INSTALL_PREFIX=[rmn install directory] ..
 make install
 ```
 
-## Build
+### rpn_comm
+
+### VGrid
+
+### `burp-tools'
+
+### RPN-SI `random`
+
+### hpcoperf
+
+## Build MIDAS
+
+Ces commandes doivent être revues!
 
 ```bash
-git clone git@github.com:ECCC-ASTD-MRD/midas-src.git midas
-cd midas
-git checkout benchmark
-
-## instructions to download the data
-
 ## instructions to load the compiling environment
-. ./.common_setup [intel|gnu|nvhpc]
+. ./load_compiler [intel|gnu|nvhpc]
 
-mkdir build
-cd build
+mkdir midas/build
+cd midas/build
+
 cmake ..
-make -j 5
-make work
+
+make -j
 ```
 
 # Run MIDAS (LetKF)
@@ -142,6 +155,8 @@ program can use.
 This script will provide a PASS or FAIL rating
 
 ```bash
+. ./load_compiler [intel|gnu|nvhpc]
+
 ./verify -pgm ${eneryNorm_program} -date 2024091900                    \
          -nml ${PWD}/midas/maestro/suites/midas_system_tests/config/Tests/energyNorm/analmean/nml \
          -reference ${MIDAS_ARCHIVE}/reference/2024091900_000_analmean \
