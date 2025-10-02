@@ -167,6 +167,9 @@ EOF
 mpirun -n $((npex*npey)) ${letkf_program}
 ```
 
+This configuration has been tested with `npex=48`, `npey=52`,
+`OMP_NUM_THREADS=4` and a total of `(48x52)x10 GB` of memory.
+
 # Run verification
 
 Verify the results with the following command providing
@@ -188,7 +191,7 @@ This script will provide a PASS or FAIL rating
          -workdir ${MIDAS_VERIFY_WQRKDIR}
 ```
 
-This process is requesting around 160 GB of RAM to run.
+This process is requesting around 155 GB of RAM to run.
 
 ## Expected output
 
