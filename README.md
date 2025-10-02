@@ -136,7 +136,7 @@ Verify the results with the following command providing
 `${eneryNorm_program}` as the path to the program
 `midas-eneryNorm.Abs`.  It is possible to provide results from several
 executions with argument `-states`.  The variable
-`{MIDAS_VERIFY_WQRKDIR}` is the path to the working directory the
+`${MIDAS_VERIFY_WQRKDIR}` is the path to the working directory the
 program can use.
 
 This script will provide a PASS or FAIL rating

@@ -99,6 +99,8 @@ SECONDS=0
 mpirun -n 1 ${energyNorm_program} > listing
 
 say "End of ${energyNorm_program} in ${SECONDS} seconds at $(date +%Y%m%d:%H:%M:%S.%N)"
+echo
+echo
 
 ## Parse the output file 'energyNorm_ascii' to detect if tests pass or not
 energyNorm_output=energyNorm_ascii
@@ -125,6 +127,8 @@ while read -u3 line; do
         say "${result} for ${fileName} (${totalEnergy} vs ${energyNorm_threshold})"
     fi
 done 3< ${energyNorm_output}
+echo
+echo
 
 if [[ "${processLine}" = false ]]; then
     die "Something wrong happened while processing ${PWD}/${energyNorm_output}"
