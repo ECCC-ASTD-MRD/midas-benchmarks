@@ -2,36 +2,139 @@
 
 set -euo pipefail
 
-stats=${1:-mean} ## or 'rms'
-npex=${2:-4}
-npey=${3:-5}
-omp_num_threads=${4:-8}
+typeset -r description="This script launches the program 'midas-energyNorm.Abs'"
 
-scripts_directory=midas/tools/midas_scripts
+arguments=$*
+eval $(cclargs -D "" $0 "[${description}]"                                               \
+  -pgm         "" "" "[path to MIDAS 'energyNorm program]"                               \
+  -nml         "" "" "[path to namelist file]"                                           \
+  -date        "" "" "[date of the input files]"                                         \
+  -reference   "" "" "[path to reference file]"                                          \
+  -states      "" "" "[path to several files on which the energy norm will be computed]" \
+  -workdir     "" "" "[path to working directory prepared by 'midas.prepare_workdir']"   \
+  ++ $arguments)
 
-midas_version=v_4.1.0-51-g50cdc17
-energyNorm_program=${PWD}/midas/compiledir/midas_abs/midas-energyNorm_${ORDENV_PLAT}-${midas_version}.Abs
+typeset -r energyNorm_program=${pgm}
+typeset -r reference
+typeset -r states
+typeset -r workdir
+typeset -r nml
+typeset -r date
 
-date=2024091900
-date6=2024091818
-namelist=${PWD}/midas/maestro/suites/midas_system_tests/config/Tests/energyNorm/anal${stats}/nml
-reference=${PWD}/work/10km_48x52/${date}_000_analmean
-states="${PWD}/work/10km_44x52/${date}_000_anal${stats}                    \
-        ${PWD}/work/10km_debug_48x52/${date}_000_anal${stats}              \
-        ${PWD}/work/10km_flipobs_x_48x52-20241004/${date}_000_anal${stats} \
-        ${PWD}/work/10km_flipobs_xy_48x52/${date}_000_anal${stats}         \
-        ${PWD}/work/10km_flipobs_y_48x52/${date}_000_anal${stats}          \
-        ${PWD}/work/10km_O1_48x52/${date}_000_anal${stats}                 \
-        ${PWD}/work/10km_O2_48x52/${date}_000_anal${stats}                 \
-        ${PWD}/work/10km_O3_48x52/${date}_000_anal${stats}                 \
-        ${PWD}/work/10km_burponly_48x52/${date}_000_anal${stats}           \
-        ${PWD}/work/10km_burponly-cmake_48x52/${date}_000_anal${stats}     \
-        ${PWD}/work/10km_burponly-cmake_48x52/${date6}_006_trial${stats}"
+scriptName=${0##*/}
 
-workdir=${PWD}/work/verify-${stats}
-[[ -d "${workdir}" ]] && rm -r ${workdir}
+function say {
+    printf "${scriptName}: ${1}\n"
+    shift
+    local say_message
+    IFS=$'\n\t'
+    for say_message in ${@}; do
+        printf "\t${say_message}\n"
+    done
+} ## End of 'function say'
 
-${scripts_directory}/midas.energyNorm -pgm ${energyNorm_program} -nml ${namelist}   \
-                    -reference ${reference} -states ${states} -workdir ${workdir}   \
-                    -npex ${npex} -npey ${npey} -omp_num_threads ${omp_num_threads} \
-                    -date ${date}
+function die {
+    IFS=$'\n\t'
+    say $@ >&2
+    exit 1
+} ## End of 'function die'
+
+if [[ ! -f "${energyNorm_program}" ]]; then
+    die "The program '${energyNorm_program}' should exist and does not"
+fi
+
+for inputFile in ${reference} ${states}; do
+    if [[ ! -f "${inputFile}" ]]; then
+        die "The file '${inputFile}' should exist and does not"
+    fi
+done
+
+mkdir ${workdir}
+cd ${workdir}
+
+if [[ -n "${nml}" ]]; then
+    if [[ -f "${nml}" ]]; then
+        say "Importing the namelist ${nml} in the working directory"
+        cp ${nml} flnml
+    else
+        die "The namelist given with option '-nml', ${nml}, does not exist."
+    fi
+fi
+
+cat > ptopo_nml <<EOF
+ &ptopo
+  npex=1
+  npey=1
+/
+EOF
+
+cat > inputFiles <<EOF
+## reference file
+${reference}
+
+## file containing the states which energy norm will be computed
+EOF
+for stateFile in $(echo ${states} | tr ' '  '\n'); do
+    echo ${stateFile} >> inputFiles
+done
+
+ulimit -c unlimited
+
+export TMG_ON=YES
+export OMP_STACKSIZE=4G
+#export OMP_NUM_THREADS=${omp_num_threads}
+
+export MIDAS_DATE=${date}
+
+## When FOR_DUMP_CORE_FILE=1 and the code abort on runtime error, cores
+## will be dumped in the work directory; one per process.
+## Each core can weight O(10) Gb (times the number of processes)
+export FOR_DUMP_CORE_FILE=
+
+say "Start of ${energyNorm_program} at $(date +%Y%m%d:%H:%M:%S.%N)"
+say "The listing will be available in the file ${PWD}/listing"
+
+SECONDS=0
+
+mpirun -n 1 ${energyNorm_program} > listing
+
+say "End of ${energyNorm_program} in ${SECONDS} seconds at $(date +%Y%m%d:%H:%M:%S.%N)"
+
+## Parse the output file 'energyNorm_ascii' to detect if tests pass or not
+energyNorm_output=energyNorm_ascii
+energyNorm_threshold=1.0
+
+say "Verifying the results from the file ${PWD}/${energyNorm_output}"
+
+processLine=false
+someFailed=false
+typeset -a resultMessages
+while read -u3 line; do
+    if [[ "${line}" =~ ^fileName ]]; then
+        processLine=true
+    elif [[ "${processLine}" = true ]]; then
+        fileName=$(echo ${line} | awk '{print $1}')
+        totalEnergy=$(echo ${line} | awk '{print $2}')
+
+        if (( $(echo "${totalEnergy} > ${energyNorm_threshold}" |bc -l) )); then
+            result=FAIL
+            someFailed=true
+        else
+            result=pass
+        fi
+
+        resultMessages+=("${result} for ${fileName} (${totalEnergy} vs ${energyNorm_threshold})")
+    fi
+done 3< ${energyNorm_output}
+
+say "Here are the evaluations:" "${resultMessages[@]}"
+
+if [[ "${processLine}" = false ]]; then
+    die "Something wrong happened while processing ${PWD}/${energyNorm_output}"
+else
+    if [[ "${someFailed}" = true ]]; then
+        say "The results have been verified and some failed!"
+    else
+        say "The results have been verified and they all pass successfully!"
+    fi
+fi

@@ -2,7 +2,7 @@
 
 Welcome to the MIDAS Data Assimilation Benchmarking System!
 
-You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/midas-src
+You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/midas-benchmarks
 
 # Requirements
 
@@ -14,15 +14,22 @@ You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/mi
   * You can get this library by going to [NWP SAF | Numerical Weather Prediction Satellite Application Facility](https://nwp-saf.eumetsat.int/site/), create an account and download it.
 * SQLite with development package (version >= 3.26.0)
 * CMake (version >= 3.20)
+* Python 3
 
 # Build MIDAS
 
 ## Compiler specifics
 
-* Compiler specific definitions and flags are defined within the ```cmake_rpn``` submodule of each code repository. If you need to change or add any,
-you can add or modify the rules into `[git source path]/cmake_rpn/modules/ec_compiler_presets/default/[architecture]/`
+Compiler specific definitions and flags are defined within the
+```cmake_rpn``` submodule of each code repository. If you need to
+change or add any, you can add or modify the rules into `[git source
+path]/cmake_rpn/modules/ec_compiler_presets/default/[architecture]/`
 
-## Build base library (librmn)
+## Build base libraries
+
+### LibRMN
+
+Ces commandes doivent être revues!
 
 ```bash
 git clone git@github.com:ECCC-ASTD-MRD/librmn.git
@@ -35,24 +42,52 @@ cmake -DCMAKE_INSTALL_PREFIX=[rmn install directory] ..
 make install
 ```
 
-## Build
+### rpn_comm
+
+Insérer les commandes pour compiler!
+
+### VGrid
+
+Insérer les commandes pour compiler!
+
+### `burp-tools`
+
+Insérer les commandes pour compiler!
+
+### RPN-SI `random`
+
+Insérer les commandes pour compiler!
+
+### hpcoperf
+
+Insérer les commandes pour compiler!
+
+### `cclargs`
+
+Les scripts `midas.prepare_workdir` et `verify` utilisent de
+`cclargs`.  Est-ce compliqué d'ajouter cet outil dans le package?
+
+Je peux aussi convertir la logique de `cclargs` à du `bash` standard.
+
+## MIDAS
+
+Ces commandes doivent être revues!
 
 ```bash
-git clone git@github.com:ECCC-ASTD-MRD/midas-src.git midas
-cd midas
-git checkout benchmark
+## load the compiling environment
 
-## instructions to download the data
+mkdir midas/build
+cd midas/build
 
-## instructions to load the compiling environment
-. ./.common_setup [intel|gnu|nvhpc]
-
-mkdir build
-cd build
 cmake ..
-make -j 5
-make work
+
+make -j
 ```
+
+From this project, there will be three programs compiled:
+ * `midas.splitobs.Abs`: needed in the preprocessing step
+ * `midas-letkf.Abs`: HPC benchmarking program
+ * `midas-energyNorm.Abs`: needed in the evaluation step
 
 # Run MIDAS (LetKF)
 
@@ -61,7 +96,7 @@ make work
 The variable `${MIDAS_ARCHIVE}` should be set to a directory
 where all the files will be downloaded on your system.
 
-Download the data needed to run `midas-letkf`:
+Download the data needed to run `midas-letkf.Abs`:
 ```bash
 ./download_dbase.sh ${MIDAS_ARCHIVE}
 ```
@@ -79,7 +114,7 @@ This will give you the possible CPU decomposition for the MIDAS LetKF global 10k
 midas/tools/midas_scripts/midas.mpiTopoFinder --ni 3124 --nj 2084          \
                --min-tasks "minimum total number of MPI tasks to consider" \
                --max-tasks "maximum total number of MPI tasks to consider" \
-               --max-diff "maximum difference of grid points per MPI task allowed (in percentage) between the regular distribution and the last MPI task"
+               --max-diff  "maximum difference of grid points per MPI task allowed (in percentage) between the regular distribution and the last MPI task"
 ```
 
 ## Prepare working directory
@@ -91,12 +126,12 @@ the MPI decomposition found at the previous step.  And the
 that has been compiled at the build step.
 
 ```bash
-midas/tools/midas_scripts/midas.prepare_workdir -workdir ${MIDAS_WORK}                      \
-                                                -ensemble ${MIDAS_ARCHIVE}/ensemble         \
+midas/tools/midas_scripts/midas.prepare_workdir -workdir      ${MIDAS_WORK}                 \
+                                                -ensemble     ${MIDAS_ARCHIVE}/ensemble     \
                                                 -observations ${MIDAS_ARCHIVE}/observations \
-                                                -constants ${MIDAS_ARCHIVE}/constants       \
-                                                -npex ${npex} -npey ${npey}                 \
-                                                -splitobs ${splitobs_program}
+                                                -constants    ${MIDAS_ARCHIVE}/constants    \
+                                                -splitobs     ${splitobs_program}           \
+                                                -npex ${npex} -npey ${npey}
 ```
 
 You need to rerun this preparation each time you change the CPU
@@ -107,31 +142,65 @@ decomposition (`${npex}` or `${npey}`).
 Before running to program, make sure to set those variables:
 
 ```bash
+## load the MPI environment
+
 ulimit -c unlimited
 
 export CMCCONST=.
 export TMG_ON=YES
 export OMP_STACKSIZE=4G ## Or any other value for your system
 
-${MIDAS_WORK}
+cd ${MIDAS_WORK}
+```
+
+With `${letkf_program}` as the path to the program `midas-letkf.Abs`
+that has been compiled at the build step, launch the program with:
+
+```bash
+cat > ptopo_nml <<EOF
+ &ptopo
+  npex=${npex}
+  npey=${npey}
+/
+EOF
 
 mpirun -n $((npex*npey)) ${letkf_program}
 ```
 
+This configuration has been tested with `npex=48`, `npey=52`,
+`OMP_NUM_THREADS=4` and a total of `(48x52)x10 GB` of memory.
+
 # Run verification
 
-* This script will provide a PASS or FAIL rating
+Verify the results with the following command providing
+`${eneryNorm_program}` as the path to the program
+`midas-eneryNorm.Abs`.  It is possible to provide results from several
+executions with argument `-states`.  The variable
+`${MIDAS_VERIFY_WQRKDIR}` is the path to the working directory the
+program can use.
+
+This script will provide a PASS or FAIL rating
 
 ```bash
-cd ..
-gem_sverif.sh -p $GEM_WORK -f dp2020022915-000-000_006
+## load the MPI environment
+
+./verify -pgm ${eneryNorm_program} -date 2024091900                    \
+         -nml ${PWD}/midas/maestro/suites/midas_system_tests/config/Tests/energyNorm/analmean/nml \
+         -reference ${MIDAS_ARCHIVE}/reference/2024091900_000_analmean \
+         -states ${MIDAS_WORK}/2024091900_000_analmean                 \
+         -workdir ${MIDAS_VERIFY_WQRKDIR}
 ```
 
-* Expected output
+This process is requesting around 155 GB of RAM to run.
+
+## Expected output
 
 ```bash
-(INFO) Run configuration found (....)
-(INFO) Passed (passed 8/8)
+        pass for ${MIDAS_WORK}/2024091900_000_analmean
+```
+or
+```bash
+        FAIL for ${MIDAS_WORK}/2024091900_000_analmean
 ```
 
 # Reference

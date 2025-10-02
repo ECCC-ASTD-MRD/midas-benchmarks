@@ -1,4 +1,4 @@
 [submodule "midas"]
 	path = midas
-	url = git@gitlab.science.gc.ca:atmospheric-data-assimilation/midas.git
-	branch = main
+	url = https://github.com/ECCC-ASTD-MRD/MIDAS-src.git
+	branch = benchmark
