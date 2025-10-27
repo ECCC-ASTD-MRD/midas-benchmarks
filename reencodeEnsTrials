@@ -27,7 +27,7 @@ encodeFile () {
  champ(UU, TOUT)
  champ(VV, TOUT)
 EOF
-    editfst -s ${inputFile} -d ${outputFile} -i <<EOF
+    editfst -s ${inputFile} -d ${outputFile} -n -m error -i <<EOF
  desire(-1,'P0')
  desire(-1,'GZ')
  desire(-1,'TG')
