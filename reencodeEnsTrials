@@ -44,11 +44,11 @@ for inputFile in ${ensTrialsInputDir}/*; do
     encodeFile ${encoding} ${inputFile} ${ensTrialsOutputDir} &
     if (( concurrentEncodings == REENCODEENSTRIALS_THREADS )); then
         ## Wait for all the concurrent threads to complete
-        wait
+        time wait
         let concurrentEncodings=0 || true
     fi
     let concurrentEncodings=concurrentEncodings+1
 done
 
 ## Wait for any leftovers
-wait
+time wait
