@@ -6,6 +6,8 @@ encoding=${1:?"reencodeEnsTrials: The encoding must be the first argument."}
 ensTrialsInputDir=${2:?"reencodeEnsTrials: You must specify a second argument which is a directory containing to files to process."}
 ensTrialsOutputDir=${3:?"reencodeEnsTrials: You must specify a third argument which is a directory where the files processed will be stored."}
 
+REENCODEENSTRIALS_THREADS=${REENCODEENSTRIALS_THREADS:-1}
+
 encodeFile () {
     typeset -r encoding=${1:?"reencodeEnsTrials.encodeTrial: You must specify an encoding"}
     typeset -r inputFile=${2:?"reencodeEnsTrials.encodeTrial: You must specify an input file"}
@@ -37,7 +39,16 @@ EOF
 
 [ ! -d "${ensTrialsOutputDir}" ] && mkdir -p ${ensTrialsOutputDir}
 
+let concurrentEncodings=1
 for inputFile in ${ensTrialsInputDir}/*; do
-    encodeFile ${encoding} ${inputFile} ${ensTrialsOutputDir}
-    break
+    encodeFile ${encoding} ${inputFile} ${ensTrialsOutputDir} &
+    if (( concurrentEncodings == REENCODEENSTRIALS_THREADS )); then
+        ## Wait for all the concurrent threads to complete
+        wait
+        let concurrentEncodings=0 || true
+    fi
+    let concurrentEncodings=concurrentEncodings+1
 done
+
+## Wait for any leftovers
+wait
