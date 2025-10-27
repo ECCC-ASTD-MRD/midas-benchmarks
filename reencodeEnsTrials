@@ -7,14 +7,22 @@ ensTrialsInputDir=${2:?"reencodeEnsTrials: You must specify a second argument wh
 ensTrialsOutputDir=${3:?"reencodeEnsTrials: You must specify a third argument which is a directory where the files processed will be stored."}
 
 REENCODEENSTRIALS_THREADS=${REENCODEENSTRIALS_THREADS:-1}
+REENCODEENSTRIALS_TMPDIR=${REENCODEENSTRIALS_TMPDIR:-}
 
 encodeFile () {
     typeset -r encoding=${1:?"reencodeEnsTrials.encodeTrial: You must specify an encoding"}
     typeset -r inputFile=${2:?"reencodeEnsTrials.encodeTrial: You must specify an input file"}
     typeset -r outputDir=${3:?"reencodeEnsTrials.encodeTrial: You must specify an output director"}
 
-    typeset -r outputFile=${ensTrialsOutputDir}/$(basename ${inputFile})
-    [ -f "${outputFile}" ] && rm ${outputFile}
+    typeset -r outputFileFinal=${ensTrialsOutputDir}/$(basename ${inputFile})
+    [ -f "${outputFileFinal}" ] && rm ${outputFileFinal}
+
+    if [[ -n "${REENCODEENSTRIALS_TMPDIR}" ]]; then
+        typeset -r outputFile=${REENCODEENSTRIALS_TMPDIR}/$(basename ${inputFile})
+        [ -f "${outputFile}" ] && rm ${outputFile}
+    else
+        typeset -r outputFile=${outputFileFinal}
+    fi
 
     pgsm -iment ${inputFile} -ozsrt ${outputFile} -msglvl error -i <<EOF
  compac=-${encoding}
@@ -33,6 +41,11 @@ EOF
  desire(-1,'TG')
  desire(-1,['^>','>>','^^'])
 EOF
+
+    if [[ -n "${REENCODEENSTRIALS_TMPDIR}" ]]; then
+        cp ${outputFile} ${outputFileFinal}
+        rm ${outputFile}
+    fi
 
     ls -ahl ${inputFile} ${outputFile}
 } ## End of routine 'encodeTrial'
