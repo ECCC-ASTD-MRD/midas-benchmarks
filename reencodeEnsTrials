@@ -1,0 +1,43 @@
+#!/bin/bash
+
+set -ueo pipefail
+
+encoding=${1:?"reencodeEnsTrials: The encoding must be the first argument."}
+ensTrialsInputDir=${2:?"reencodeEnsTrials: You must specify a second argument which is a directory containing to files to process."}
+ensTrialsOutputDir=${3:?"reencodeEnsTrials: You must specify a third argument which is a directory where the files processed will be stored."}
+
+encodeFile () {
+    typeset -r encoding=${1:?"reencodeEnsTrials.encodeTrial: You must specify an encoding"}
+    typeset -r inputFile=${2:?"reencodeEnsTrials.encodeTrial: You must specify an input file"}
+    typeset -r outputDir=${3:?"reencodeEnsTrials.encodeTrial: You must specify an output director"}
+
+    typeset -r outputFile=${ensTrialsOutputDir}/$(basename ${inputFile})
+    [ -f "${outputFile}" ] && rm ${outputFile}
+
+    pgsm -iment ${inputFile} -ozsrt ${outputFile} -msglvl error -i <<EOF
+ compac=-${encoding}
+ compress=oui
+ sortie(std,400,r)
+ grille(comme, fentree,'TT',  '  ',-1, -1, -1, -1, '            ')
+ heure(tout)
+ champ('TT')
+ champ('HU')
+ champ(UU, TOUT)
+ champ(VV, TOUT)
+EOF
+    editfst -s ${inputFile} -d ${outputFile} -i <<EOF
+ desire(-1,'P0')
+ desire(-1,'GZ')
+ desire(-1,'TG')
+ desire(-1,['^>','>>','^^'])
+EOF
+
+    ls -ahl ${inputFile} ${outputFile}
+} ## End of routine 'encodeTrial'
+
+[ ! -d "${ensTrialsOutputDir}" ] && mkdir -p ${ensTrialsOutputDir}
+
+for inputFile in ${ensTrialsInputDir}/*; do
+    encodeFile ${encoding} ${inputFile} ${ensTrialsOutputDir}
+    break
+done
