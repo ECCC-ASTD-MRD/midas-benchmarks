@@ -61,10 +61,13 @@ if [[ -n "${nml}" ]]; then
     fi
 fi
 
+npex=5
+npey=4
+
 cat > ptopo_nml <<EOF
  &ptopo
-  npex=1
-  npey=1
+  npex=${npex}
+  npey=${npey}
 /
 EOF
 
@@ -96,7 +99,7 @@ say "The listing will be available in the file ${PWD}/listing"
 
 SECONDS=0
 
-mpirun -n 1 ${energyNorm_program} > listing
+mpirun -n $((npex*npey)) ${energyNorm_program} > listing
 
 say "End of ${energyNorm_program} in ${SECONDS} seconds at $(date +%Y%m%d:%H:%M:%S.%N)"
 
