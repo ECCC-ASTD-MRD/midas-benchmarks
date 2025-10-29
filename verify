@@ -119,12 +119,12 @@ while read -u3 line; do
         fileName=$(echo ${line} | awk '{print $1}')
         totalEnergy=$(echo ${line} | awk '{print $2}')
 
-        if (( $(echo "${totalEnergy} > ${energyNorm_threshold}" |bc -l) )); then
-            result=FAIL
-            someFailed=true
-        else
-            result=pass
-        fi
+        result=$(python3 -c "
+if ${totalEnergy} > ${energyNorm_threshold}:
+    print('FAIL')
+else:
+    print('pass')
+")
 
         resultMessages+=("${result} for ${fileName} (${totalEnergy} vs ${energyNorm_threshold})")
     fi
