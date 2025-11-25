@@ -2,3 +2,27 @@
 	path = midas
 	url = https://github.com/ECCC-ASTD-MRD/MIDAS-src.git
 	branch = benchmark
+[submodule "rpn/rmn"]
+	path = rpn/rmn
+	url = https://github.com/ECCC-ASTD-MRD/librmn.git
+	branch = alpha
+[submodule "rpn/rpncomm"]
+	path = rpn/rpncomm
+	url = https://github.com/ECCC-ASTD-MRD/rpncomm.git
+	branch = main
+[submodule "rpn/vgrid"]
+	path = rpn/vgrid
+	url = https://github.com/ECCC-ASTD-MRD/vgrid.git
+	branch = master
+[submodule "rpn/random"]
+	path = rpn/random
+	url = https://github.com/ECCC-ASTD-MRD/random_tools.git
+	branch = master
+[submodule "rpn/burp-tools"]
+	path = rpn/burp-tools
+	url = https://github.com/ECCC-ASTD-MRD/burp-tools.git
+	branch = master
+[submodule "rpn/cmake_rpn"]
+	path = rpn/cmake_rpn
+	url = https://github.com/ECCC-ASTD-MRD/cmake_rpn.git
+	branch = master
