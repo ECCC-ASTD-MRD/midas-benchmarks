@@ -2,6 +2,9 @@
 # timing/Makefile
 #
 
+CC = icx
+#CC = gcc
+
 default:
 
 clean:
@@ -13,5 +16,11 @@ install:
 	cp *.a $(INSTALL_DIR)/lib
 
 lib:
-	s.cc -O 2 -c -openmp hpco_fort_hpm.c weak*.c rebind.c reporter.c history_trace.c ; \
-	ar rv libhpcoperf.a hpco_fort_hpm.o weak*.o rebind.o reporter.o history_trace.o
+# with icc/icx or with gcc
+	@if [ "$(CC)" = "icx" ]; then OMP=-qopenmp $(MAKE) compile; \
+	else if [ "$(CC)" = "gcc" ]; then OMP=-fopenmp $(MAKE) compile; \
+	fi ; fi ;
+
+compile:
+	$(CC) -O2 -c $(OMP) hpco_fort_hpm.c weak*.c rebind.c reporter.c history_trace.c ; \
+	ar rv libhpcoperf.a hpco_fort_hpm.o weak*.o rebind.o reporter.o history_trace.o; \
