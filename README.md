@@ -6,12 +6,13 @@ You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/mi
 
 # Requirements
 
-* Fortran and C compiler. Theses codes have been tested with compilers from GNU and Intel OneAPI (classic and llvm based)
+* Fortran and C compiler. These codes have been tested with compilers from GNU and Intel OneAPI (classic and llvm based)
 * An MPI implementation such as OpenMPI, MPICH or Intel MPI (with development package)
 * OpenMP support
 * BLAS, LAPACK or equivalent mathematical/scientific library (ie: MKL), with development package and thread-safe support
 * RTTOV version 13
   * You can get this library by going to [NWP SAF | Numerical Weather Prediction Satellite Application Facility](https://nwp-saf.eumetsat.int/site/), create an account and download it.
+* HDF5/netCDF
 * SQLite with development package (version >= 3.26.0)
 * CMake (version >= 3.20)
 * Python 3
@@ -23,65 +24,66 @@ You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/mi
 Compiler specific definitions and flags are defined within the
 ```cmake_rpn``` submodule of each code repository. If you need to
 change or add any, you can add or modify the rules into `[git source
-path]/cmake_rpn/modules/ec_compiler_presets/default/[architecture]/`
+path]/rpn/cmake_rpn/modules/ec_compiler_presets/default/[architecture]/`
 
 ## Build base libraries
 
-### LibRMN
-
-Ces commandes doivent être revues!
+After cloning the git repo, you need to use the following command to get all
+the git submodules:
 
 ```bash
-git clone git@github.com:ECCC-ASTD-MRD/librmn.git
-cd librmn
-git checkout alpha
+cd midas-benchmarks
 git submodule update --init --recursive
-mkdir build
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=[rmn install directory] ..
+```
+The following instructions assume that you are installing the libraries and
+tools in a directory above the cloned git repo, but you can modify them
+according to your chosen installation.
+
+### rmn library
+
+```bash
+cd ..
+mkdir build-rpn
+cd build-rpn
+cmake -DCMAKE_INSTALL_PREFIX=../rpn-install ../midas-benchmarks/rpn
 make install
 ```
 
-### rpn_comm
+### perftools
 
-Insérer les commandes pour compiler!
+```bash
+cd ..
+cd midas-benchmarks/perftools/src
+make
+INSTALL_DIR=../../../perf-install make install
+```
 
-### VGrid
+### rttov library
 
-Insérer les commandes pour compiler!
+You can get this library by going to [NWP SAF | Numerical Weather Prediction
+Satellite Application Facility](https://nwp-saf.eumetsat.int/site/), create
+an account and download it.
 
-### `burp-tools`
-
-Insérer les commandes pour compiler!
-
-### RPN-SI `random`
-
-Insérer les commandes pour compiler!
-
-### hpcoperf
-
-Insérer les commandes pour compiler!
-
-### `cclargs`
-
-Les scripts `midas.prepare_workdir` et `verify` utilisent de
-`cclargs`.  Est-ce compliqué d'ajouter cet outil dans le package?
-
-Je peux aussi convertir la logique de `cclargs` à du `bash` standard.
+Follow the instructions and install it in a separate directory, which we
+named rttov-install in the following instructions.
 
 ## MIDAS
 
-Ces commandes doivent être revues!
-
 ```bash
-## load the compiling environment
-
-mkdir midas/build
-cd midas/build
-
-cmake ..
-
+cd rpn-install
+export CMAKE_PREFIX_PATH=$PWD:$CMAKE_PREFIX_PATH
+cd ..
+cd rttov-install
+export rttov_INSTALLDIR=$PWD
+cd ..
+cd perf-install
+export perftools_LIBRARY_PATH=$PWD/lib
+cd ..
+mkdir build-midas
+cd build-midas
+cmake -DCMAKE_INSTALL_PREFIX=../midas-install ../midas-benchmarks/midas
 make -j
+make install
 ```
 
 From this project, there will be three programs compiled:
