@@ -7,11 +7,12 @@
 #define _XOPEN_SOURCE_EXTENDED 
 #endif
 #ifdef NOUI
+int vmenu();
 int vmenu()
 {
-printf("cclargs ERROR: Interactive mode NOT SUPPORTED\n");
-exit(1);
-return 1;
+   printf("cclargs ERROR: Interactive mode NOT SUPPORTED\n");
+   exit(1);
+   return 1;
 }
 #endif
 /*************************************************************
@@ -59,23 +60,33 @@ struct definition
     enum typecle type;
 };
 
-void check_argv(char **argv){
+void check_argv(char **argv)
+{
   if(*argv != NULL) return;
   fprintf(stderr,"cclargs: FATAL ERROR, argument expected, NULL found\n");
   exit(1);
 }
 
-int main(argc, argv)
-int argc;
-char **argv;
+void getnom(char *scriptnom, char *argv, int size);
+char **ini_list(char **argv, struct definition defo[], int *status);
+char **positionel(char **argv);
+char **equivalence(char **argv, struct definition defo[], char *scriptnom, int *status);
+int valide_kle(char *keyname, struct definition defo[]);
+char **argu_list(char **argv, char *valeur, enum typecle type);
+void pas_de_deux(char *arg);
+enum typecle majmin(char *arg);
+void converti(char *arg, enum typecle type);
+void sequence_appel(struct definition defo[], char *scriptnom, char *help_general);
+void imprime(struct definition defo[]);
+void apres_moin_moin(char **argv);
+void interactif(struct definition defo[], char *scriptnom, char *help_general);
+int obligatoire(struct definition defo[]);
+
+int main(int argc, char **argv)
 {
   /* save original values of argc and argv for an eventual exec to the GUI version */
   char **ARGV0=argv;
 
-  char **ini_list(), **positionel(), **equivalence();
-  void apres_moin_moin(), sequence_appel();
-  void imprime(), interactif(), getnom();
-  int obligatoire();
   char **pointeur;
   static char scriptnom[50], help_general[182];
   int i, lng;
@@ -85,9 +96,7 @@ char **argv;
 
   struct definition defo[NKLEMAX];
 
-
 /*initialisation des structures de definition  */
-
   for(i = 0; i < NKLEMAX ; i++)
   {
    defo[i].kle_nom=NULL;
@@ -217,10 +226,7 @@ char **argv;
 /*
  * verifier si toutes les clefs obligatoires on une valeur
 */
-
     on_affiche = on_affiche ? on_affiche : obligatoire(defo);
-
-
 
 /*  passer en mode ecran si demande    */
     if(on_affiche)
@@ -255,15 +261,9 @@ char **argv;
   return(0);
 }
 
-
 /*********************************************************************
  *   initialiser les noms de clefs et les valeurs de defaut          *
  *********************************************************************/
-
-char **ini_list(argv, defo, status)
-char **argv;
-struct definition defo[];
-int *status;
 
 /*   adaptation : j. caveen  janvier 1991 a partir du programme cclargs ecrit
 *                                         par m. valin.
@@ -282,10 +282,8 @@ int *status;
 *       status         "        compteur d'erreurs
 *
 */
-
+char **ini_list(char **argv, struct definition defo[], int *status)
 {
-   void pas_de_deux(), converti();
-   enum typecle majmin();
    int compte, i, ldesc;
    char *egal_pointeur ;
 
@@ -375,7 +373,6 @@ int *status;
                 defo[i].kle_def2 = (*argv);
              }
         }
-       
       }
       argv++;
     }
@@ -384,16 +381,9 @@ int *status;
    return(argv); 
 }
 
-
-
-
 /**********************************************************
  *    traitement des arguments en mode positionnel        *
  **********************************************************/
-
-char **positionel(argv)
-char **argv;
-
 /*  adaptation:  j. caveen janvier 1991 a partir du programme cclargs ecrit 
 *                                       par m. valin
 *
@@ -406,6 +396,7 @@ char **argv;
 *       argv   entree  pointeur au mot suivant le ++ dans le vecteur d'arguments
 */
 
+char **positionel(char **argv)
 {
     int count = 0;
     
@@ -444,16 +435,9 @@ char **argv;
      return(argv);
 }
 
-
-
 /*********************************************************************
  *       traitement des arguments en mode equivalence                *
  *********************************************************************/
-
-char **equivalence(argv, defo, scriptnom,  status)
-char **argv, *scriptnom;
-struct definition defo[];
-int *status;
 /*
 *   adaptation: j. caveen janvier 1991 a partir du programme cclargs 
 *                                      ecrit par m. valin
@@ -468,11 +452,8 @@ int *status;
 *      status    sortie   compteur d'erreurs
 *
 */
-
+char **equivalence(char **argv, struct definition defo[], char *scriptnom, int *status)
 {
-   void pas_de_deux(), converti(), sequence_appel();
-   int valide_kle();
-   char **argu_list();
    int index;
    char *keyname;
    char *egal_pointeur;
@@ -542,16 +523,9 @@ int *status;
       return(argv);
 }
 
-
-
 /*********************************************************
  *             valider un nom de clef                    *
  *********************************************************/
-
-int valide_kle(keyname, defo)
-char *keyname;
-struct definition defo[];
-
 /*  auteur:  james caveen, janvier 1991
 *
 *   fonction s'assurant que le nom de clef utilise par l'usager est bel et
@@ -565,8 +539,8 @@ struct definition defo[];
 *        defo             "      liste des nom de clefs possibles
 *
 */
+int valide_kle(char *keyname, struct definition defo[])
 {
-   
    int i = 0, index = -1;
   
    while(defo[i].kle_nom != '\0')
@@ -580,21 +554,12 @@ struct definition defo[];
       }
       i++;
    }
-   
    return(index);
 }
 
-
-
 /**************************************************************
  *     dresser une liste de valeurs de clefs                  *
  **************************************************************/
-
-char **argu_list(argv,valeur,type)
-char **argv;
-char *valeur;
-enum typecle type;
-
 /*  dresser la liste de toutes les valeurs attribuees a une clef 
 *   la fonction retourne un pointeur au dernier mot de la liste
 *   des valeurs attribuees.
@@ -606,10 +571,8 @@ enum typecle type;
 *       argv      "          pointeur aux valeurs a donner a kle
 *
 */
+char **argu_list(char **argv, char *valeur, enum typecle type)
 {
-    void converti(), pas_de_deux();
-
-
    if(**argv == '-')
    {
         argv--;
@@ -648,15 +611,10 @@ enum typecle type;
     return(argv);
 } 
 
-
-
 /*****************************************************
  *       enlever les deux points d'une chaine        *
  *****************************************************/
-
-void pas_de_deux(arg)
-char *arg;
-
+void pas_de_deux(char *arg)
 {
         while(*arg)
         {
@@ -667,23 +625,17 @@ char *arg;
         }
 }
 
-
-
 /********************************************************
  *          determiner le type de clef                  *
  ********************************************************/
-
-enum typecle majmin(arg)
-char *arg;
-
 /*     fonction servant a determiner si la valeur a donner a une
 *      clef est de type majuscule, minuscule ou si elle reste telle
 *      que decrite lors de l'appel.  la fonction retourne le valeur
 *      du type de clef (majus minus ou pareil) et met le dernier
 *      element de arg egal a nul si necessaire.
 */
+enum typecle majmin(char *arg)
 {
-
     int lng;
     lng = strlen(arg) - 1;
 
@@ -698,29 +650,19 @@ char *arg;
            return(minus);
     }
     return(pareil);
-
 }
 
-
-
 /**********************************************************
  *    convertir une valeur de clef selon le type          *
  **********************************************************/
-
-void converti(arg,type)
-enum typecle type;
-char *arg;
-
-{
 /*       fonction servant a faire la conversion d'une valeur de clef
 *        si defo[index].type = majus, on force la valeur a des majuscules
 *        si defo[index].type = minus, on force la valeur a des minuscules
 *        si defo[index].type = pareil, on retourne la clef tel quel
 */
-
-      if(type == pareil)
-           ;
-
+void converti(char *arg, enum typecle type)
+{
+      if(type == pareil);
       else if(type == majus)
       {
           while(*arg)
@@ -739,17 +681,9 @@ char *arg;
       }
 }
 
-
-
 /******************************************************
  *       imprimer sur stderr la sequence d'appel      *
  ******************************************************/
-
-void sequence_appel(defo,scriptnom,help_general)
-struct definition defo[];
-char *scriptnom;
-char *help_general;
-
 /*   fonction servant a imprimer sur le fichier stderr la liste des
 *    noms de clefs et leurs valeurs de defaut
 *
@@ -758,12 +692,10 @@ char *help_general;
 *         defo    -    structure contenant les noms de clefs ainsi que leurs
 *                      valeurs de defaut et le type.
 */
-
+void sequence_appel(struct definition defo[], char *scriptnom, char *help_general)
 {
-
      char *desc;
      int i = 0;
-
      
      fprintf(stderr,"\n *** SEQUENCE D'APPEL ***\n\n");
 
@@ -783,15 +715,10 @@ char *help_general;
      fprintf(stderr,"\n");
 }
 
-
-
 /*************************************************************
  *      imprimer les valeurs finales des clefs               *
  *************************************************************/
-
-void imprime(defo)
-struct definition defo[];
-
+void imprime(struct definition defo[])
 {
    int index=0;
    char *temp;
@@ -837,17 +764,11 @@ struct definition defo[];
      }
      OUTBUFPTR+=sprintf(OUTBUFPTR,"}");
    }
-
 }
 
-
-
 /**********************************************************
  *    traitement des arguments  apres le signe --         *
  **********************************************************/
-
-void apres_moin_moin(argv)
-char **argv;
 
 /*  adaptation:  j. caveen janvier 1991 a partir du programme cclargs ecrit 
 *                                       par m. valin
@@ -860,8 +781,8 @@ char **argv;
 *     argv   entree  pointeur au mot suivant le ++ dans le vecteur d'arguments
 */
 
+void apres_moin_moin(char **argv)
 {
-    
     if(interp == shell) OUTBUFPTR+=sprintf(OUTBUFPTR," set -- $* ");
 
     while(*argv)
@@ -877,17 +798,11 @@ char **argv;
 
 }
 
-
 /*********************************************************************
  *   fonction servant a passer en mode interactif via vmenu          *
  *********************************************************************/
-void interactif(defo,scriptnom,help_general)
-struct definition defo[];
-char *scriptnom, *help_general;
+void interactif(struct definition defo[], char *scriptnom, char *help_general)
 {
-
-     void converti();
-     int vmenu(), obligatoire();
      char **cle, **val, **aide;
      int i,nbliste,status, nfois = 0;
 
@@ -898,7 +813,6 @@ char *scriptnom, *help_general;
 
     nbliste++;
     /* allouer la memoire et initialiser les vecteurs pour vmenu  */
-
     cle = (char **) malloc(sizeof(char *)*nbliste);
 /*    cle[0] = (char *) malloc(20*sizeof(char)); */
     for(i=1;i<nbliste;i++)
@@ -923,44 +837,39 @@ char *scriptnom, *help_general;
       aide[i] = (char *) malloc(182*sizeof(char));
       defo[i-1].kle_desc && strcpy(aide[i],defo[i-1].kle_desc);
     }
-
     do
     {
-         status =  vmenu(scriptnom,cle,val,aide,nbliste,nfois);
-
-         if(status == -1)
-         {
-                 printf(" exit %d ",status);
-                 exit (status);
-    
-         }
-/*
- *       injecter les valeurs finales dans la structure  
- */
-
-         for(i=1;i<nbliste;i++)
-         {
-            converti(val[i],defo[i-1].type);
-            defo[i-1].kle_val = val[i];
-         }
-         nfois++;
-      }
-      while(obligatoire(defo));   
+       /*       status =  vmenu(scriptnom,cle,val,aide,nbliste,nfois); */
+       status =  vmenu();
+       if(status == -1)
+       {
+          printf(" exit %d ",status);
+          exit (status);
+          
+       }
+       /*
+        *       injecter les valeurs finales dans la structure  
+        */
+       
+       for(i=1;i<nbliste;i++)
+       {
+          converti(val[i],defo[i-1].type);
+          defo[i-1].kle_val = val[i];
+       }
+       nfois++;
+    }
+    while(obligatoire(defo));   
 }
 
-
 /*******************************************************************
  *   obtenir le nom du script faisant l'appel a cclargs            *
  *******************************************************************/
-void getnom(scriptnom,argv,size)
-char *scriptnom, *argv;
-int size;
+void getnom(char *scriptnom, char *argv, int size)
 {
      char  tmp[50], *pttmp = tmp;
      int lng, i, ncar=0;
 
      lng = strlen(argv);
-
 /*
      extraction du nom du script a partir de la fin jusqu'a un nom 
      de chemin (i.e.  de "/bin/unscript", on extrait "unscript". 
@@ -971,9 +880,8 @@ int size;
         ncar++;
      }
 /*
-   recopier a l'en-droit le nom du script dans scriptnom
+   recopier à l'endroit le nom du script dans scriptnom
 */
-   
    if(ncar <= size)
    {
       *pttmp--;
@@ -986,16 +894,12 @@ int size;
    }
 }
 
-
 /************************************************************
  *    fonction servant a verifier si toutes les clefs       *
- *           obligatoires on obtenu une valeur              *
+ *           obligatoires ont obtenu une valeur              *
  ************************************************************/
-
-int obligatoire(defo)
-struct definition defo[];
+int obligatoire(struct definition defo[])
 {
-
       int result = 0, i = 0;
       static char *virgul = {",,,,\0"};
 
