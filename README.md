@@ -55,7 +55,7 @@ make install
 cd ..
 cd midas-benchmarks/perftools/src
 make
-INSTALL_DIR=../../../perf-install make install
+INSTALL_DIR=../../../../perf-install make install
 ```
 
 ### rttov library
