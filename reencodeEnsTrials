@@ -10,9 +10,9 @@ REENCODEENSTRIALS_THREADS=${REENCODEENSTRIALS_THREADS:-1}
 REENCODEENSTRIALS_TMPDIR=${REENCODEENSTRIALS_TMPDIR:-}
 
 encodeFile () {
-    typeset -r encoding=${1:?"reencodeEnsTrials.encodeTrial: You must specify an encoding"}
-    typeset -r inputFile=${2:?"reencodeEnsTrials.encodeTrial: You must specify an input file"}
-    typeset -r outputDir=${3:?"reencodeEnsTrials.encodeTrial: You must specify an output director"}
+    typeset -r encoding=${1:?"reencodeEnsTrials.encodeFile: You must specify an encoding"}
+    typeset -r inputFile=${2:?"reencodeEnsTrials.encodeFile: You must specify an input file"}
+    typeset -r outputDir=${3:?"reencodeEnsTrials.encodeFile: You must specify an output director"}
 
     typeset -r outputFileFinal=${ensTrialsOutputDir}/$(basename ${inputFile})
     [ -f "${outputFileFinal}" ] && rm ${outputFileFinal}
@@ -47,8 +47,8 @@ EOF
         rm ${outputFile}
     fi
 
-    ls -ahl ${inputFile} ${outputFile}
-} ## End of routine 'encodeTrial'
+    ls -ahl ${inputFile} ${outputFileFinal}
+} ## End of routine 'encodeFile'
 
 [ ! -d "${ensTrialsOutputDir}" ] && mkdir -p ${ensTrialsOutputDir}
 
