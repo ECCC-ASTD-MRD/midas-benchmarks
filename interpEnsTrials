@@ -1,5 +1,10 @@
 #!/bin/bash
 
+## One can submit this script directly in batch using the command:
+##    resolution=100km
+##    ord_soumet interpEnsTrials -mach ppp6 -cpus 80 -m 180G -listing ${PWD} -w 180 -jn interpEnsTrials_${resolution} \
+##                               -args ${resolution} ${PWD}/work/ensemble ${PWD}/work/ensemble_${resolution}
+
 set -ueo pipefail
 
 resolution=${1:?"interpEnsTrials: The encoding must be the first argument."}
