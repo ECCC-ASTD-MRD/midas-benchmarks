@@ -2,14 +2,14 @@
 
 ## One can submit this script directly in batch using the command:
 ##    resolution=100km
-##    ord_soumet interpEnsTrials -mach ppp6 -cpus 80 -m 180G -listing ${PWD} -w 180 -jn interpEnsTrials_${resolution} \
+##    ord_soumet interpEnsTrials2coarserResolution -mach ppp6 -cpus 80 -m 180G -listing ${PWD} -w 180 -jn interpEnsTrials_${resolution} \
 ##                               -args ${resolution} ${PWD}/work/ensemble ${PWD}/work/ensemble_${resolution}
 
 set -ueo pipefail
 
-resolution=${1:?"interpEnsTrials: The encoding must be the first argument."}
-ensTrialsInputDir=${2:?"interpEnsTrials: You must specify a second argument which is a directory containing to files to process."}
-ensTrialsOutputDir=${3:?"interpEnsTrials: You must specify a third argument which is a directory where the files processed will be stored."}
+resolution=${1:?"interpEnsTrials2coarserResolution: The encoding must be the first argument."}
+ensTrialsInputDir=${2:?"interpEnsTrials2coarserResolution: You must specify a second argument which is a directory containing to files to process."}
+ensTrialsOutputDir=${3:?"interpEnsTrials2coarserResolution: You must specify a third argument which is a directory where the files processed will be stored."}
 
 INTERPENSTRIALS_THREADS=${INTERPENSTRIALS_THREADS:-${OMP_NUM_THREADS:-1}}
 INTERPENSTRIALS_TMPDIR=${INTERPENSTRIALS_TMPDIR:-}
@@ -19,9 +19,9 @@ which pgsm > /dev/null 2>&1 || . r.load.dot eccc/mrd/rpn/utils/20250909-beta
 set -u
 
 interpolateFile () {
-    typeset -r inputFile=${1:?"interpEnsTrials.interpolateFile: You must specify an input file"}
-    typeset -r outputDir=${2:?"interpEnsTrials.interpolateFile: You must specify an output director"}
-    typeset -r gridDirective=${3:?"interpEnsTrials.interpolateFile: The destination grid as a PGSM directive"}
+    typeset -r inputFile=${1:?"interpEnsTrials2coarserResolution.interpolateFile: You must specify an input file"}
+    typeset -r outputDir=${2:?"interpEnsTrials2coarserResolution.interpolateFile: You must specify an output director"}
+    typeset -r gridDirective=${3:?"interpEnsTrials2coarserResolution.interpolateFile: The destination grid as a PGSM directive"}
 
     typeset -r outputFileFinal=${ensTrialsOutputDir}/$(basename ${inputFile})
     [ -f "${outputFileFinal}" ] && rm ${outputFileFinal}
@@ -62,7 +62,7 @@ elif [ "${resolution}" = 50km ]; then
 elif [ "${resolution}" = 35km ]; then
     gridDirective="GRILLE(GAUSS,1080,540,GLOBAL)"
 else
-    echo "interpEnsTrials: The resolution must be one of supported resolution: 100km, 50km and 35km.  We got '${resolution}'." >&2
+    echo "interpEnsTrials2coarserResolution: The resolution must be one of supported resolution: 100km, 50km and 35km.  We got '${resolution}'." >&2
     exit 1
 fi
 
