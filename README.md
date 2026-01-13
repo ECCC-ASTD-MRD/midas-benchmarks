@@ -90,6 +90,7 @@ From this project, there will be three programs compiled:
  * `midas.splitobs.Abs`: needed in the preprocessing step
  * `midas-letkf.Abs`: HPC benchmarking program
  * `midas-energyNorm.Abs`: needed in the evaluation step
+ * `midas-ensPostProcess.Abs`: needed in the evaluation step
 
 # Run MIDAS (LetKF)
 
