@@ -1,0 +1,78 @@
+#!/bin/bash
+
+set -ueo pipefail
+
+resolution=${1:?"interpEnsTrials: The encoding must be the first argument."}
+ensTrialsInputDir=${2:?"interpEnsTrials: You must specify a second argument which is a directory containing to files to process."}
+ensTrialsOutputDir=${3:?"interpEnsTrials: You must specify a third argument which is a directory where the files processed will be stored."}
+
+INTERPENSTRIALS_THREADS=${INTERPENSTRIALS_THREADS:-${OMP_NUM_THREADS:-1}}
+INTERPENSTRIALS_TMPDIR=${INTERPENSTRIALS_TMPDIR:-}
+
+set +ux
+which pgsm > /dev/null 2>&1 || . r.load.dot eccc/mrd/rpn/utils/20250909-beta
+set -u
+
+interpolateFile () {
+    typeset -r inputFile=${1:?"interpEnsTrials.interpolateFile: You must specify an input file"}
+    typeset -r outputDir=${2:?"interpEnsTrials.interpolateFile: You must specify an output director"}
+    typeset -r gridDirective=${3:?"interpEnsTrials.interpolateFile: The destination grid as a PGSM directive"}
+
+    typeset -r outputFileFinal=${ensTrialsOutputDir}/$(basename ${inputFile})
+    [ -f "${outputFileFinal}" ] && rm ${outputFileFinal}
+
+    if [[ -n "${INTERPENSTRIALS_TMPDIR}" ]]; then
+        typeset -r outputFile=${INTERPENSTRIALS_TMPDIR}/$(basename ${inputFile})
+        [ -f "${outputFile}" ] && rm ${outputFile}
+    else
+        typeset -r outputFile=${outputFileFinal}
+    fi
+
+    pgsm -iment ${inputFile} -ozsrt ${outputFile} -msglvl error -i <<EOF
+ SORTIE(STD,1000,A)
+ ${gridDirective}
+ COMPAC=-16
+ HEURE(tout)
+ SETINTX(LINEAIR)
+ CHAMP('UV',TOUT)
+ CHAMP('TT',TOUT)
+ CHAMP('HU',TOUT)
+ CHAMP('GZ',TOUT)
+ CHAMP('P0',TOUT)
+ CHAMP('TG',TOUT)
+EOF
+
+    if [[ -n "${INTERPENSTRIALS_TMPDIR}" ]]; then
+        cp ${outputFile} ${outputFileFinal}
+        rm ${outputFile}
+    fi
+
+    ls -ahl ${inputFile} ${outputFileFinal}
+} ## End of routine 'interpolateFile'
+
+if [ "${resolution}" = 100km ]; then
+    gridDirective="GRILLE(GAUSS,400,200,GLOBAL)"
+elif [ "${resolution}" = 50km ]; then
+    gridDirective="GRILLE(GAUSS,800,400,GLOBAL)"
+elif [ "${resolution}" = 35km ]; then
+    gridDirective="GRILLE(GAUSS,1080,540,GLOBAL)"
+else
+    echo "interpEnsTrials: The resolution must be one of supported resolution: 100km, 50km and 35km.  We got '${resolution}'." >&2
+    exit 1
+fi
+
+[ ! -d "${ensTrialsOutputDir}" ] && mkdir -p ${ensTrialsOutputDir}
+
+let concurrentEncodings=1
+for inputFile in ${ensTrialsInputDir}/*; do
+    interpolateFile ${inputFile} ${ensTrialsOutputDir} ${gridDirective} &
+    if (( concurrentEncodings == INTERPENSTRIALS_THREADS )); then
+        ## Wait for all the concurrent threads to complete
+        time wait
+        let concurrentEncodings=0 || true
+    fi
+    let concurrentEncodings=concurrentEncodings+1
+done
+
+## Wait for any leftovers
+time wait
