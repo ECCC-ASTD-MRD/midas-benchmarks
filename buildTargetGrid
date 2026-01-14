@@ -17,14 +17,15 @@ set -u
 editfst -s ${inputFile} -d ${targetGrid} -n -m error -i <<EOF
  desire(-1,'P0',-1,-1,-1,6)
  desire(-1,['^>','>>','^^','!!'])
+ zap(-1,-1,'TARGETGRID')
 EOF
 
 editfst -s ${inputFile} -d ${targetGrid} -n -m error -i <<EOF
  desire(-1,'TT',-1,-1,-1,6)
- zap(-1,'TH')
+ zap(-1,'TH','TARGETGRID')
 EOF
 
 editfst -s ${inputFile} -d ${targetGrid} -n -m error -i <<EOF
  desire(-1,'UU',-1,-1,-1,6)
- zap(-1,'MM')
+ zap(-1,'MM','TARGETGRID')
 EOF

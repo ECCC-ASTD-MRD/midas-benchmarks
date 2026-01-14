@@ -7,7 +7,7 @@
 
 set -ueo pipefail
 
-resolution=${1:?"interpEnsTrials2coarserResolution: The encoding must be the first argument."}
+resolution=${1:?"interpEnsTrials2coarserResolution: The resolution must be the first argument."}
 ensTrialsInputDir=${2:?"interpEnsTrials2coarserResolution: You must specify a second argument which is a directory containing to files to process."}
 ensTrialsOutputDir=${3:?"interpEnsTrials2coarserResolution: You must specify a third argument which is a directory where the files processed will be stored."}
 
