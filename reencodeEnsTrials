@@ -9,6 +9,10 @@ ensTrialsOutputDir=${3:?"reencodeEnsTrials: You must specify a third argument wh
 REENCODEENSTRIALS_THREADS=${REENCODEENSTRIALS_THREADS:-1}
 REENCODEENSTRIALS_TMPDIR=${REENCODEENSTRIALS_TMPDIR:-}
 
+set +ux
+which pgsm > /dev/null 2>&1 || . r.load.dot eccc/mrd/rpn/utils/20251009-beta
+set -u
+
 encodeFile () {
     typeset -r encoding=${1:?"reencodeEnsTrials.encodeFile: You must specify an encoding"}
     typeset -r inputFile=${2:?"reencodeEnsTrials.encodeFile: You must specify an input file"}

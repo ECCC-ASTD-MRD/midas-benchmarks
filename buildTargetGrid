@@ -11,7 +11,7 @@ if [[ -f "${targetGrid}" ]]; then
 fi
 
 set +ux
-which editfst > /dev/null 2>&1 || . r.load.dot eccc/mrd/rpn/utils/20250909-beta
+which editfst > /dev/null 2>&1 || . r.load.dot eccc/mrd/rpn/utils/20251009-beta
 set -u
 
 editfst -s ${inputFile} -d ${targetGrid} -n -m error -i <<EOF

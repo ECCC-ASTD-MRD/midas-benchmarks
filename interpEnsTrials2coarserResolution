@@ -15,7 +15,7 @@ INTERPENSTRIALS_THREADS=${INTERPENSTRIALS_THREADS:-${OMP_NUM_THREADS:-1}}
 INTERPENSTRIALS_TMPDIR=${INTERPENSTRIALS_TMPDIR:-}
 
 set +ux
-which pgsm > /dev/null 2>&1 || . r.load.dot eccc/mrd/rpn/utils/20250909-beta
+which pgsm > /dev/null 2>&1 || . r.load.dot eccc/mrd/rpn/utils/20251009-beta
 set -u
 
 interpolateFile () {
