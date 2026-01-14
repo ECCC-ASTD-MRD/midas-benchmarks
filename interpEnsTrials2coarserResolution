@@ -35,6 +35,11 @@ interpolateFile () {
     fi
 
     export FST_OPTIONS="BACKEND=RSF"
+    if [[ -n "${targetGrid}" ]]; then
+        editfst -s ${targetGrid} -d ${outputFile} -n -m error -i <<EOF
+ desire(-1,['^>','>>','^^'])
+EOF
+    fi
     pgsm -iment ${inputFile} ${targetGrid} -ozsrt ${outputFile} -msglvl error -i <<EOF
  SORTIE(STD,1000,A)
  ${gridDirective}
