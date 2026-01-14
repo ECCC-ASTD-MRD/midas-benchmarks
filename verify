@@ -6,7 +6,7 @@ typeset -r description="This script launches the program 'midas-energyNorm.Abs'"
 
 arguments=$*
 eval $(cclargs -D "" $0 "[${description}]"                                               \
-  -pgm         "" "" "[path to MIDAS 'energyNorm program]"                               \
+  -pgm         "" "" "[path to MIDAS 'energyNorm' program]"                              \
   -nml         "" "" "[path to namelist file]"                                           \
   -date        "" "" "[date of the input files]"                                         \
   -reference   "" "" "[path to reference file]"                                          \
@@ -85,7 +85,6 @@ ulimit -c unlimited
 
 export TMG_ON=YES
 export OMP_STACKSIZE=4G
-#export OMP_NUM_THREADS=${omp_num_threads}
 
 export MIDAS_DATE=${date}
 

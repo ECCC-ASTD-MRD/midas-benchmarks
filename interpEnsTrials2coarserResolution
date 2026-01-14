@@ -22,6 +22,7 @@ interpolateFile () {
     typeset -r inputFile=${1:?"interpEnsTrials2coarserResolution.interpolateFile: You must specify an input file"}
     typeset -r outputDir=${2:?"interpEnsTrials2coarserResolution.interpolateFile: You must specify an output director"}
     typeset -r gridDirective=${3:?"interpEnsTrials2coarserResolution.interpolateFile: The destination grid as a PGSM directive"}
+    typeset -r targetGrid=${4:-}
 
     typeset -r outputFileFinal=${ensTrialsOutputDir}/$(basename ${inputFile})
     [ -f "${outputFileFinal}" ] && rm ${outputFileFinal}
@@ -33,10 +34,12 @@ interpolateFile () {
         typeset -r outputFile=${outputFileFinal}
     fi
 
-    pgsm -iment ${inputFile} -ozsrt ${outputFile} -msglvl error -i <<EOF
+    export FST_OPTIONS="BACKEND=RSF"
+    pgsm -iment ${inputFile} ${targetGrid} -ozsrt ${outputFile} -msglvl error -i <<EOF
  SORTIE(STD,1000,A)
  ${gridDirective}
  COMPAC=-16
+ compress=oui
  HEURE(tout)
  SETINTX(LINEAIR)
  CHAMP('UV',TOUT)
@@ -55,12 +58,17 @@ EOF
     ls -ahl ${inputFile} ${outputFileFinal}
 } ## End of routine 'interpolateFile'
 
+targetGrid=
 if [ "${resolution}" = 100km ]; then
     gridDirective="GRILLE(GAUSS,400,200,GLOBAL)"
 elif [ "${resolution}" = 50km ]; then
     gridDirective="GRILLE(GAUSS,800,400,GLOBAL)"
 elif [ "${resolution}" = 35km ]; then
     gridDirective="GRILLE(GAUSS,1080,540,GLOBAL)"
+elif [ -f "${resolution}" ]; then
+    ## If '${resolution}' is a file, then we assume that it is the target grid
+    gridDirective="GRILLE(COMME,fentree,'P0',-1,-1,-1,-1,-1,'TARGETGRID')"
+    targetGrid=${resolution}
 else
     echo "interpEnsTrials2coarserResolution: The resolution must be one of supported resolution: 100km, 50km and 35km.  We got '${resolution}'." >&2
     exit 1
@@ -70,7 +78,7 @@ fi
 
 let concurrentEncodings=1
 for inputFile in ${ensTrialsInputDir}/*; do
-    interpolateFile ${inputFile} ${ensTrialsOutputDir} ${gridDirective} &
+    interpolateFile ${inputFile} ${ensTrialsOutputDir} ${gridDirective} ${targetGrid} &
     if (( concurrentEncodings == INTERPENSTRIALS_THREADS )); then
         ## Wait for all the concurrent threads to complete
         time wait
