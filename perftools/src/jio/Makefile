@@ -2,7 +2,7 @@
 # jio/Makefile
 #
 
-CC = icx
+CC ?= icx
 #CC = gcc
 
 default:
@@ -19,7 +19,8 @@ lib:
 # with icc/icx or with gcc
 	@if [ "$(CC)" = "icx" ]; then OMP=-qopenmp $(MAKE) compile; \
 	else if [ "$(CC)" = "gcc" ]; then OMP=-fopenmp $(MAKE) compile; \
-	fi ; fi ;
+	else if [[ "$(CC)" = *clang ]]; then OMP=-fopenmp $(MAKE) compile; \
+	fi ; fi ; fi ;
 
 compile:
 	$(CC) -c -fpic -o s.jio-prof.o $(OMP) jio-uni-2.c
