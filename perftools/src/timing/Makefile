@@ -1,26 +1,39 @@
 #
 # timing/Makefile
 #
-
-CC = icx
+src=$(wildcard *.c)
+obj=$(src:.c=.o)
+CC ?= icx
 #CC = gcc
+PREFIX ?= $(INSTALL_DIR)
+LIBNAME = libhpcoperf.a
 
-default:
 
+ifeq ($(CC),icx)
+	OMP=-qopenmp
+else
+	OMP=-fopenmp
+endif
+
+ifeq ($(shell uname),Darwin)
+	INSTALL=ginstall
+	LDFLAGS="-L/opt/homebrew/opt/libomp/lib"
+	CPPFLAGS="-I/opt/homebrew/opt/libomp/include"
+else
+	INSTALL=install
+endif
+
+default: lib
 clean:
 	rm -f *.o *.a
+install: lib
+	$(INSTALL) -m 644 $(LIBNAME) -D $(DESTDIR)$(PREFIX)/lib/$(LIBNAME)
+lib: $(LIBNAME)
+$(LIBNAME): $(obj)
+	ar rv $@ $<
+%.o:%.c
+	$(CC) -c $(CPPFLAGS) $(OMP) -o $@ $^
+vars:
+	@echo "src=$(src)"
+	@echo "obj=$(obj)"
 
-install: 
-	if [ "$(INSTALL_DIR)" = "" ]; then echo "error: INSTALL_DIR not set"; exit 1; fi
-	mkdir -p $(INSTALL_DIR)/lib
-	cp *.a $(INSTALL_DIR)/lib
-
-lib:
-# with icc/icx or with gcc
-	@if [ "$(CC)" = "icx" ]; then OMP=-qopenmp $(MAKE) compile; \
-	else if [ "$(CC)" = "gcc" ]; then OMP=-fopenmp $(MAKE) compile; \
-	fi ; fi ;
-
-compile:
-	$(CC) -O2 -c $(OMP) hpco_fort_hpm.c weak*.c rebind.c reporter.c history_trace.c ; \
-	ar rv libhpcoperf.a hpco_fort_hpm.o weak*.o rebind.o reporter.o history_trace.o; \

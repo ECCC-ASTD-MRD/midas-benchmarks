@@ -207,7 +207,13 @@ static unsigned long long jio_time1( void )
 {
     unsigned long lo, hi;
     unsigned long long result;
-    asm( "rdtsc" : "=a" (lo), "=d" (hi) ); 
+    // Causes error with MacOS
+    //     jio-uni-2.c:210:10: error: couldn't allocate output register for constraint 'a'
+    //       210 |     asm( "rdtsc" : "=a" (lo), "=d" (hi) );
+    //           |          ^
+    // so I will sketchily comment out the line
+    // asm( "rdtsc" : "=a" (lo), "=d" (hi) );
+
     result = hi;
     result = lo | (result<<32);
     return( result );

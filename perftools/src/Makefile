@@ -3,13 +3,11 @@
 #
 
 default:
-	(cd jio; make lib)
-	(cd timing; make lib)
-
+	make -C jio lib
+	make -C timing lib
 clean:
-	(cd jio; make clean)
-	(cd timing; make clean)
-
+	make -C jio clean
+	make -C timing clean
 install:
-	(cd jio; make install)
-	(cd timing; make install)
+	make -C jio install
+	make -C timing install

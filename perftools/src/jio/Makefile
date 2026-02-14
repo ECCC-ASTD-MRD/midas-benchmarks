@@ -1,26 +1,37 @@
 #
-# jio/Makefile
+# timing/Makefile
 #
+src=$(wildcard *.c)
+obj=$(src:.c=.o)
+CC ?= icx
+PREFIX ?= $(INSTALL_DIR)
+LIBNAME = s.jio-prof.a
 
-CC = icx
-#CC = gcc
+ifeq ($(CC),icx)
+	OMP=-qopenmp
+else
+	OMP=-fopenmp
+endif
 
-default:
+ifeq ($(shell uname),Darwin)
+	INSTALL=ginstall
+	LDFLAGS="-L/opt/homebrew/opt/libomp/lib"
+	CPPFLAGS="-I/opt/homebrew/opt/libomp/include"
+else
+	INSTALL=install
+endif
 
+default: lib
 clean:
-	rm -f *.a *.o
+	rm -f *.o *.a
+install: lib
+	$(INSTALL) -m 644 $(LIBNAME) -D $(DESTDIR)$(PREFIX)/lib/$(LIBNAME)
+lib: $(LIBNAME)
+$(LIBNAME): $(obj)
+	ar rv $@ $<
+%.o:%.c
+	$(CC) -c $(CPPFLAGS) $(OMP) -o $@ $^
+vars:
+	@echo "src=$(src)"
+	@echo "obj=$(obj)"
 
-install:
-	if [ "$(INSTALL_DIR)" = "" ]; then echo "error: INSTALL_DIR not set"; exit 1; fi
-	mkdir -p $(INSTALL_DIR)/lib
-	cp *.a $(INSTALL_DIR)/lib
-
-lib:	
-# with icc/icx or with gcc
-	@if [ "$(CC)" = "icx" ]; then OMP=-qopenmp $(MAKE) compile; \
-	else if [ "$(CC)" = "gcc" ]; then OMP=-fopenmp $(MAKE) compile; \
-	fi ; fi ;
-
-compile:
-	$(CC) -c -fpic -o s.jio-prof.o $(OMP) jio-uni-2.c
-	ar rcv s.jio-prof.a s.jio-prof.o
