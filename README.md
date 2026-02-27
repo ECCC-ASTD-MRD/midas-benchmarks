@@ -111,6 +111,8 @@ setting the environment variable `DOWNLOAD_DBASE_CHECK_MD5SUM` to
 
 ## Testing the compilation and the execution environment
 
+### Prepare the working directory
+
 We provide a small configuration 8 members at 100km resolution to test
 the execution environment.
 
@@ -120,16 +122,21 @@ You can prepare the working directory with
 npex=3
 npey=2
 
-midas/tools/midas_scripts/midas.prepare_workdir -workdir      ${MIDAS_WORK}                 \
-                                                -namelist     ${PWD}/nml_100km              \
-                                                -ensemble     ${MIDAS_ARCHIVE}/ensemble     \
-                                                -observations ${MIDAS_ARCHIVE}/observations \
-                                                -constants    ${MIDAS_ARCHIVE}/constants    \
-                                                -splitobs     ${splitobs_program}           \
+mkdir ${MIDAS_ARCHIVE}/observations-ua
+cp ${MIDAS_ARCHIVE}/observations/obsua ${MIDAS_ARCHIVE}/observations-ua
+
+midas/tools/midas_scripts/midas.prepare_workdir -workdir      ${MIDAS_WORK}                    \
+                                                -namelist     ${PWD}/nml_100km                 \
+                                                -ensemble     ${MIDAS_ARCHIVE}/ensemble        \
+                                                -observations ${MIDAS_ARCHIVE}/observations-ua \
+                                                -constants    ${MIDAS_ARCHIVE}/constants       \
+                                                -splitobs     ${splitobs_program}              \
                                                 -npex ${npex} -npey ${npey}
 
 rm ${MIDAS_WORK}/grid_weight.bin
 ```
+
+### Prepare the execution environment
 
 Before running to program, make sure to set those variables:
 
@@ -143,21 +150,25 @@ export TMG_ON=YES
 export OMP_STACKSIZE=4G ## Or any other value for your system
 
 cd ${MIDAS_WORK}
-```
 
-With `${letkf_program}` as the path to the program `midas-letkf.Abs`
-that has been compiled at the build step, launch the program with:
-
-```bash
 cat > ptopo_nml <<EOF
  &ptopo
   npex=${npex}
   npey=${npey}
 /
 EOF
+```
 
+### Run the program
+
+With `${letkf_program}` as the path to the program `midas-letkf.Abs`
+that has been compiled at the build step, launch the program with:
+
+```bash
 mpirun -n $((npex*npey)) ${letkf_program}
 ```
+
+### Checking the results
 
 This execution should generate this list of files:
  * `2024091818_006_trialmean`
@@ -184,9 +195,12 @@ This execution should generate this list of files:
  * `2024091900_000_inc_0006`
  * `2024091900_000_inc_0007`
  * `2024091900_000_inc_0008`
+ * `obs/obsua_*_*`
 
 
-## Choice of CPU decomposition
+## Run the benchmark
+
+### Choose the CPU decomposition
 
 This will give you the possible CPU decomposition for the MIDAS LetKF global 10km configuration:
 
@@ -197,7 +211,7 @@ midas/tools/midas_scripts/midas.mpiTopoFinder --ni 3124 --nj 2084          \
                --max-diff  "maximum difference of grid points per MPI task allowed (in percentage) between the regular distribution and the last MPI task"
 ```
 
-## Prepare working directory
+### Prepare the working directory
 
 The variable `${MIDAS_WORK}` should be set to the working directory
 where the program will run.  The values `${npex}` and `${npey}` are
@@ -217,7 +231,7 @@ midas/tools/midas_scripts/midas.prepare_workdir -workdir      ${MIDAS_WORK}     
 You need to rerun this preparation each time you change the CPU
 decomposition (`${npex}` or `${npey}`).
 
-## Run program (or submit to queuing system):
+### Run the program (or submit to queuing system):
 
 Before running to program, make sure to set those variables:
 
