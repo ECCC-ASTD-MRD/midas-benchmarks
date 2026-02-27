@@ -109,6 +109,83 @@ file.  Since this step can be quite long, you can skip that step by
 setting the environment variable `DOWNLOAD_DBASE_CHECK_MD5SUM` to
 `no`.
 
+## Testing the compilation and the execution environment
+
+We provide a small configuration 8 members at 100km resolution to test
+the execution environment.
+
+You can prepare the working directory with
+```bash
+## For this small test, we suggest this MPI decomposition
+npex=3
+npey=2
+
+midas/tools/midas_scripts/midas.prepare_workdir -workdir      ${MIDAS_WORK}                 \
+                                                -namelist     ${PWD}/nml_100km              \
+                                                -ensemble     ${MIDAS_ARCHIVE}/ensemble     \
+                                                -observations ${MIDAS_ARCHIVE}/observations \
+                                                -constants    ${MIDAS_ARCHIVE}/constants    \
+                                                -splitobs     ${splitobs_program}           \
+                                                -npex ${npex} -npey ${npey}
+
+rm ${MIDAS_WORK}/grid_weight.bin
+```
+
+Before running to program, make sure to set those variables:
+
+```bash
+## load the MPI environment
+
+ulimit -c unlimited
+
+export CMCCONST=.
+export TMG_ON=YES
+export OMP_STACKSIZE=4G ## Or any other value for your system
+
+cd ${MIDAS_WORK}
+```
+
+With `${letkf_program}` as the path to the program `midas-letkf.Abs`
+that has been compiled at the build step, launch the program with:
+
+```bash
+cat > ptopo_nml <<EOF
+ &ptopo
+  npex=${npex}
+  npey=${npey}
+/
+EOF
+
+mpirun -n $((npex*npey)) ${letkf_program}
+```
+
+This execution should generate this list of files:
+ * `2024091818_006_trialmean`
+ * `2024091818_006_trialrms`
+ * `2024091818_006_trialrms_ascii`
+ * `2024091900_000_0000`
+ * `2024091900_000_0001`
+ * `2024091900_000_0002`
+ * `2024091900_000_0003`
+ * `2024091900_000_0004`
+ * `2024091900_000_0005`
+ * `2024091900_000_0006`
+ * `2024091900_000_0007`
+ * `2024091900_000_0008`
+ * `2024091900_000_analmean`
+ * `2024091900_000_analrms`
+ * `2024091900_000_analrms_ascii`
+ * `2024091900_000_inc_0000`
+ * `2024091900_000_inc_0001`
+ * `2024091900_000_inc_0002`
+ * `2024091900_000_inc_0003`
+ * `2024091900_000_inc_0004`
+ * `2024091900_000_inc_0005`
+ * `2024091900_000_inc_0006`
+ * `2024091900_000_inc_0007`
+ * `2024091900_000_inc_0008`
+
+
 ## Choice of CPU decomposition
 
 This will give you the possible CPU decomposition for the MIDAS LetKF global 10km configuration:
