@@ -3,7 +3,7 @@
 ## One can submit this script directly in batch using the command:
 ##    resolution=100km
 ##    ord_soumet interpEnsTrials2coarserResolution -mach ppp6 -cpus 80 -m 180G -listing ${PWD} -w 180 -jn interpEnsTrials_${resolution} \
-##                               -args ${resolution} ${PWD}/work/ensemble ${PWD}/work/ensemble_${resolution}
+##                                                 -args ${resolution} ${PWD}/work/ensemble ${PWD}/work/ensemble_${resolution}
 
 set -ueo pipefail
 
@@ -34,7 +34,7 @@ interpolateFile () {
         typeset -r outputFile=${outputFileFinal}
     fi
 
-    export FST_OPTIONS="BACKEND=RSF"
+    #export FST_OPTIONS="BACKEND=RSF"
     if [[ -n "${targetGrid}" ]]; then
         editfst -s ${targetGrid} -d ${outputFile} -n -m error -i <<EOF
  desire(-1,['^>','>>','^^'])
