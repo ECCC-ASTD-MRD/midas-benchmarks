@@ -133,7 +133,6 @@ midas/tools/midas_scripts/midas.prepare_workdir -workdir      ${MIDAS_WORK}     
                                                 -splitobs     ${splitobs_program}              \
                                                 -npex ${npex} -npey ${npey}
 
-rm ${MIDAS_WORK}/grid_weight.bin
 ```
 
 ### Prepare the execution environment

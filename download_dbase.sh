@@ -5,8 +5,8 @@ set -euo pipefail
 MIDAS_DBASE_URL=http://collaboration.cmc.ec.gc.ca/science/outgoing/midas-benchmarks
 
 declare -A archiveDatabase
-archiveDatabase[midas_observations.tar.gz]="9c0f114475aa9c0a3f84c4c5ab0865df observations"
-archiveDatabase[midas_constants.tar.gz]="78d013ee3f42cc846e7733f13e6b1553 constants"
+archiveDatabase[midas_observations.tar.gz]="e143732aea1058eb2875821a0d1ce757 observations"
+archiveDatabase[midas_constants.tar.gz]="561726eeb354d53f63d7c626fb753e46 constants"
 archiveDatabase[midas_results.tar.gz]="2822c5c45252b3795efdd697a558b42b reference"
 #archiveDatabase[midas_ensemble.tar]="75c54da9ac1f41fa314f3306bfab5842 ensemble"
 #archiveDatabase[midas_ensemble_0.tar]="b76118d94c50cbeed74a186eeffe4833 ensemble"
@@ -19,8 +19,8 @@ archiveDatabase[midas_results.tar.gz]="2822c5c45252b3795efdd697a558b42b referenc
 #archiveDatabase[midas_ensemble_7.tar]="4ac552c8e6d0dcad7a607e0f77612f69 ensemble"
 #archiveDatabase[midas_ensemble_8.tar]="3e805b2d96f3fba0f805bb11d64ad645 ensemble"
 #archiveDatabase[midas_ensemble_9.tar]="ad2fa9f002cde53453221ade17ba310d ensemble"
-archiveDatabase[midas_ensemble_100km.tar]="1a3c1f7e55e89304ac389bcc39d6641b ensemble"
-archiveDatabase[midas_ensemble_10km_control.tar]="17af99a5d47956ca756eb3ee1c8076ec ensemble_control"
+archiveDatabase[midas_ensemble_100km.tar]="12e4dd4e06b8bfc248a3d6c5b6c8a332 ensemble"
+archiveDatabase[midas_ensemble_10km_control.tar]="d55775eca16d55d6cb3da6f5e5b31619 ensemble_control"
 
 printUsage() {
     echo -e "Download a sample database of data files needed to run MIDAS benchmarks."
