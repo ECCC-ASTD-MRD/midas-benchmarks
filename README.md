@@ -122,15 +122,12 @@ You can prepare the working directory with
 npex=3
 npey=2
 
-mkdir ${MIDAS_ARCHIVE}/observations-ua
-cp ${MIDAS_ARCHIVE}/observations/obsua ${MIDAS_ARCHIVE}/observations-ua
-
-midas/tools/midas_scripts/midas.prepare_workdir -workdir      ${MIDAS_WORK}                    \
-                                                -namelist     ${PWD}/nml_100km                 \
-                                                -ensemble     ${MIDAS_ARCHIVE}/ensemble        \
-                                                -observations ${MIDAS_ARCHIVE}/observations-ua \
-                                                -constants    ${MIDAS_ARCHIVE}/constants       \
-                                                -splitobs     ${splitobs_program}              \
+midas/tools/midas_scripts/midas.prepare_workdir -workdir      ${MIDAS_WORK}                 \
+                                                -namelist     ${PWD}/nml_100km              \
+                                                -ensemble     ${MIDAS_ARCHIVE}/ensemble     \
+                                                -observations ${MIDAS_ARCHIVE}/observations \
+                                                -constants    ${MIDAS_ARCHIVE}/constants    \
+                                                -splitobs     ${splitobs_program}           \
                                                 -npex ${npex} -npey ${npey}
 
 ```
