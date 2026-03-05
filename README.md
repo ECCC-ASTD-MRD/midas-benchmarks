@@ -9,7 +9,7 @@ You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/mi
 * Fortran and C compiler. These codes have been tested with compilers from GNU and Intel OneAPI (classic and llvm based)
 * An MPI implementation such as OpenMPI, MPICH or Intel MPI (with development package)
 * OpenMP support
-* BLAS, LAPACK or equivalent mathematical/scientific library (ie: MKL), with development package and thread-safe support
+* BLAS, LAPACK or equivalent mathematical/scientific library (ie: Intel MKL), with development package and thread-safe support
 * RTTOV version 13
   * You can get this library by going to [NWP SAF | Numerical Weather Prediction Satellite Application Facility](https://nwp-saf.eumetsat.int/site/), create an account and download it.
 * HDF5/netCDF
@@ -58,14 +58,14 @@ make
 INSTALL_DIR=../../../../perf-install make install
 ```
 
-### rttov library
+### RTTOV 13 library
 
 You can get this library by going to [NWP SAF | Numerical Weather Prediction
 Satellite Application Facility](https://nwp-saf.eumetsat.int/site/), create
 an account and download it.
 
-Follow the instructions and install it in a separate directory, which we
-named rttov-install in the following instructions.
+Follow the instructions and install it in a separate directory, which
+we named `rttov-install` in the following instructions.
 
 ## MIDAS
 
