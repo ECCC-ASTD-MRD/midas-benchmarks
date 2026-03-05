@@ -70,15 +70,10 @@ we named `rttov-install` in the following instructions.
 ## MIDAS
 
 ```bash
-cd rpn-install
-export CMAKE_PREFIX_PATH=$PWD:$CMAKE_PREFIX_PATH
-cd ..
-cd rttov-install
-export rttov_INSTALLDIR=$PWD
-cd ..
-cd perf-install
-export perftools_LIBRARY_PATH=$PWD/lib
-cd ..
+export CMAKE_PREFIX_PATH=${PWD}/rpn-install:${CMAKE_PREFIX_PATH}
+export rttov_INSTALLDIR=${PWD}/rttov-install
+export perftools_LIBRARY_PATH=${PWD}/perf-install/lib
+
 mkdir build-midas
 cd build-midas
 cmake -DCMAKE_INSTALL_PREFIX=../midas-install ../midas-benchmarks/midas
