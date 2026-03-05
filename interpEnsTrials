@@ -1,0 +1,104 @@
+#!/bin/bash
+
+set -euo pipefail
+
+typeset -r description="This script launches the program 'midas-ensPostProcess.Abs' to interpolation the ensemble trials"
+
+arguments=$*
+eval $(cclargs -D "" $0 "[${description}]"                         \
+  -pgm         "" "" "[path to MIDAS 'ensPostProcess' program]"    \
+  -nml         "" "" "[path to namelist file]"                     \
+  -npex        5  5  "[number of MPI ranks in the x direction]"    \
+  -npey        4  4  "[number of MPI ranks in the y direction]"    \
+  -targetGrid  "" "" "[path to the definition of the target grid]" \
+  -ensInput    "" "" "[path to input ensemble trials]"             \
+  -ensOutput   "" "" "[path to interpolated ensemble trials]"      \
+  -workdir     "" "" "[path to working directory]"                 \
+  ++ $arguments)
+
+typeset -r ensPostProcess_program=${pgm}
+typeset -r nml
+typeset -r targetGrid
+typeset -r ensInput
+typeset -r ensOutput
+typeset -r workdir
+
+scriptName=${0##*/}
+
+function say {
+    printf "${scriptName}: ${1}\n"
+    shift
+    local say_message
+    IFS=$'\n\t'
+    for say_message in ${@}; do
+        printf "\t${say_message}\n"
+    done
+} ## End of 'function say'
+
+function die {
+    IFS=$'\n\t'
+    say $@ >&2
+    exit 1
+} ## End of 'function die'
+
+if [[ ! -f "${ensPostProcess_program}" ]]; then
+    die "The program '${ensPostProcess_program}' should exist and does not"
+fi
+
+if [[ ! -d "${ensInput}" ]]; then
+    die "The directory '${ensInput}' should exist and does not"
+fi
+
+if [[ -d "${ensOutput}" ]]; then
+    die "The directory '${ensOutput}' should not exist and does"
+fi
+
+mkdir ${workdir}
+cd ${workdir}
+
+if [[ -n "${nml}" ]]; then
+    if [[ -f "${nml}" ]]; then
+        say "Importing the namelist ${nml} in the working directory"
+        cp ${nml} flnml
+    else
+        die "The namelist given with option '-nml', ${nml}, does not exist."
+    fi
+fi
+
+#npex=3
+#npey=5
+
+cat > ptopo_nml <<EOF
+ &ptopo
+  npex=${npex}
+  npey=${npey}
+/
+EOF
+
+ln -s ${ensInput} ensemble_trial
+ln -s ${targetGrid} targetgrid
+
+ulimit -c unlimited
+
+export TMG_ON=YES
+export OMP_STACKSIZE=4G
+
+## When FOR_DUMP_CORE_FILE=1 and the code abort on runtime error, cores
+## will be dumped in the work directory; one per process.
+## Each core can weight O(10) Gb (times the number of processes)
+export FOR_DUMP_CORE_FILE=
+
+say "Start of ${ensPostProcess_program} at $(date +%Y%m%d:%H:%M:%S.%N)"
+say "The listing will be available in the file ${PWD}/listing"
+
+SECONDS=0
+
+mpirun -n $((npex*npey)) ${ensPostProcess_program} > listing
+
+say "End of ${ensPostProcess_program} in ${SECONDS} seconds at $(date +%Y%m%d:%H:%M:%S.%N)"
+
+say "Moving the output files from ${workdir} to ${ensOutput}"
+mkdir -p   ${ensOutput}
+mv *_006_* ${ensOutput}
+
+say "You can find the interpolated ensemble trials in the directory ${ensOutput}"
