@@ -104,7 +104,7 @@ file.  Since this step can be quite long, you can skip that step by
 setting the environment variable `DOWNLOAD_DBASE_CHECK_MD5SUM` to
 `no`.
 
-## Testing the compilation and the execution environment
+## Testing the execution environment
 
 ### Prepare the working directory
 
@@ -124,7 +124,6 @@ midas/tools/midas_scripts/midas.prepare_workdir -workdir      ${MIDAS_WORK}     
                                                 -constants    ${MIDAS_ARCHIVE}/constants    \
                                                 -splitobs     ${splitobs_program}           \
                                                 -npex ${npex} -npey ${npey}
-
 ```
 
 ### Prepare the execution environment
@@ -186,8 +185,36 @@ This execution should generate this list of files:
  * `2024091900_000_inc_0006`
  * `2024091900_000_inc_0007`
  * `2024091900_000_inc_0008`
- * `obs/obsua_*_*`
+ * `obs/obs*_*_*`
 
+
+## Interpolate the ensemble trials from 100km to 10km
+
+To avoid downloading terabytes of data, a set of low resolution, at
+100km, ensemble trials have been prepared and should have been
+downloading in step [Download database](#download-database).  Then you
+need to interpolate them at 10km.  The program `midas-ensPostprocess`
+can be used for that in combination with the script `interpEnsTrials`.
+You will need a total of around 24TB fo RAM to run this step which
+will be equally distributed amound the 30x20 MPI ranks.
+
+Here is how to call it:
+`̀``bash
+ensInput=${MIDAS_ARCHIVE}/ensemble
+targetGrid=${MIDAS_ARCHIVE}/constants/targetGrid_10km
+nml=${PWD}/nml_interpEnsTrials
+npex=30
+npey=20
+
+./interpEnsTrials -pgm      ${ensPostProcess_program}             \
+                  -nml      ${nml}      -targetGrid ${targetGrid} \
+                  -npex     ${npex}     -npey       ${npey}       \
+                  -ensInput ${ensInput} -ensOutput  ${ensOutput}  \
+                  -workdir  ${workdir}
+
+## After interpolating the ensemble to 10km, copy the control member (index '_0000' to '${ensOutput}')
+cp -v ${MIDAS_ARCHIVE}/ensemble_control/2024091818_006_0000 ${ensOutput}
+```
 
 ## Run the benchmark
 
@@ -212,7 +239,7 @@ that has been compiled at the build step.
 
 ```bash
 midas/tools/midas_scripts/midas.prepare_workdir -workdir      ${MIDAS_WORK}                 \
-                                                -ensemble     ${MIDAS_ARCHIVE}/ensemble     \
+                                                -ensemble     ${ensOutput}                  \
                                                 -observations ${MIDAS_ARCHIVE}/observations \
                                                 -constants    ${MIDAS_ARCHIVE}/constants    \
                                                 -splitobs     ${splitobs_program}           \
