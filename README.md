@@ -47,15 +47,16 @@ mkdir build-rpn
 cd build-rpn
 cmake -DCMAKE_INSTALL_PREFIX=../rpn-install ../midas-benchmarks/rpn
 make install
+cd ..
 ```
 
 ### perftools
 
 ```bash
-cd ..
 cd midas-benchmarks/perftools/src
 make
 INSTALL_DIR=../../../../perf-install make install
+cd ../../..
 ```
 
 ### RTTOV 13 library
@@ -87,6 +88,13 @@ From this project, there will be three programs compiled:
  * `midas-energyNorm.Abs`: needed in the evaluation step
  * `midas-ensPostProcess.Abs`: needed in the evaluation step
 
+```bash
+splitobs_program=${PWD}/midas-install/bin/midas.splitobs.Abs
+letkf_program=${PWD}/midas-install/midas-letkf.Abs
+ensPostProcess_program=${PWD}/midas-install/midas-ensPostProcess.Abs
+energyNorm_program=${PWD}/midas-install/midas-energyNorm.Abs
+`̀``
+
 # Run MIDAS (LetKF)
 
 ## Download database
@@ -111,6 +119,12 @@ setting the environment variable `DOWNLOAD_DBASE_CHECK_MD5SUM` to
 We provide a small configuration 8 members at 100km resolution to test
 the execution environment.
 
+The variable `${MIDAS_WORK}` should be set to the working directory
+where the program will run.  The values `${npex}` and `${npey}` are
+the MPI decomposition.  For this small test, some values are
+suggested.  And the `${splitobs_program}` is the path to the program
+`midas.splitobs.Abs` that has been compiled at the build step.
+
 You can prepare the working directory with
 ```bash
 ## For this small test, we suggest this MPI decomposition
@@ -118,7 +132,7 @@ npex=3
 npey=2
 
 midas/tools/midas_scripts/midas.prepare_workdir -workdir      ${MIDAS_WORK}                 \
-                                                -namelist     ${PWD}/nml_100km              \
+                                                -nml          ${PWD}/nml_100km              \
                                                 -ensemble     ${MIDAS_ARCHIVE}/ensemble     \
                                                 -observations ${MIDAS_ARCHIVE}/observations \
                                                 -constants    ${MIDAS_ARCHIVE}/constants    \
@@ -140,13 +154,6 @@ export TMG_ON=YES
 export OMP_STACKSIZE=4G ## Or any other value for your system
 
 cd ${MIDAS_WORK}
-
-cat > ptopo_nml <<EOF
- &ptopo
-  npex=${npex}
-  npey=${npey}
-/
-EOF
 ```
 
 ### Run the program
@@ -155,6 +162,10 @@ With `${letkf_program}` as the path to the program `midas-letkf.Abs`
 that has been compiled at the build step, launch the program with:
 
 ```bash
+## It is important to always recreate the 'obs' subdirectory before each execution
+rm -rf obs
+cp -r obsfiles_split obs
+
 mpirun -n $((npex*npey)) ${letkf_program}
 ```
 
@@ -269,12 +280,9 @@ With `${letkf_program}` as the path to the program `midas-letkf.Abs`
 that has been compiled at the build step, launch the program with:
 
 ```bash
-cat > ptopo_nml <<EOF
- &ptopo
-  npex=${npex}
-  npey=${npey}
-/
-EOF
+## It is important to always recreate the 'obs' subdirectory before each execution
+rm -rf obs
+cp -r obsfiles_split obs
 
 mpirun -n $((npex*npey)) ${letkf_program}
 ```
