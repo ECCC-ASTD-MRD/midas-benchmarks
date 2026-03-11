@@ -97,6 +97,9 @@ energyNorm_program=${PWD}/midas-install/midas-energyNorm.Abs
 
 # Run MIDAS (LetKF)
 
+From here, we assume the working directory is where the code
+`midas-benchmarks` have been downloaded.
+
 ## Download database
 
 The variable `${MIDAS_ARCHIVE}` should be set to a directory
