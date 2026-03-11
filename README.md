@@ -253,6 +253,7 @@ that has been compiled at the build step.
 
 ```bash
 midas/tools/midas_scripts/midas.prepare_workdir -workdir      ${MIDAS_WORK}                 \
+                                                -nml          ${PWD}/nml_10km               \
                                                 -ensemble     ${ensOutput}                  \
                                                 -observations ${MIDAS_ARCHIVE}/observations \
                                                 -constants    ${MIDAS_ARCHIVE}/constants    \
