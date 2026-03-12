@@ -216,6 +216,7 @@ Here is how to call it:
 `̀``bash
 ensInput=${MIDAS_ARCHIVE}/ensemble
 targetGrid=${MIDAS_ARCHIVE}/constants/targetGrid_10km
+gzSfc=${MIDAS_ARCHIVE}/constants/GZ_sfc.fstd
 nml=${PWD}/nml_interpEnsTrials
 npex=30
 npey=20
@@ -224,7 +225,7 @@ npey=20
                   -nml      ${nml}      -targetGrid ${targetGrid} \
                   -npex     ${npex}     -npey       ${npey}       \
                   -ensInput ${ensInput} -ensOutput  ${ensOutput}  \
-                  -workdir  ${workdir}
+                  -gzSfc    ${gzSfc}    -workdir  ${workdir}
 
 ## After interpolating the ensemble to 10km, copy the control member (index '_0000' to '${ensOutput}')
 cp -v ${MIDAS_ARCHIVE}/ensemble_control/2024091818_006_0000 ${ensOutput}

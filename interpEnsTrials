@@ -11,6 +11,7 @@ eval $(cclargs -D "" $0 "[${description}]"                         \
   -npex        5  5  "[number of MPI ranks in the x direction]"    \
   -npey        4  4  "[number of MPI ranks in the y direction]"    \
   -targetGrid  "" "" "[path to the definition of the target grid]" \
+  -gzSfc       "" "" "[path to a RSF file containing the surface GZ]" \
   -ensInput    "" "" "[path to input ensemble trials]"             \
   -ensOutput   "" "" "[path to interpolated ensemble trials]"      \
   -workdir     "" "" "[path to working directory]"                 \
@@ -20,6 +21,7 @@ typeset -r ensPostProcess_program=${pgm}
 typeset -r nml
 typeset -r targetGrid
 typeset -r ensInput
+typeset -r gzSfc
 typeset -r ensOutput
 typeset -r workdir
 
@@ -65,9 +67,6 @@ if [[ -n "${nml}" ]]; then
     fi
 fi
 
-#npex=3
-#npey=5
-
 cat > ptopo_nml <<EOF
  &ptopo
   npex=${npex}
@@ -96,6 +95,12 @@ SECONDS=0
 mpirun -n $((npex*npey)) ${ensPostProcess_program} > listing
 
 say "End of ${ensPostProcess_program} in ${SECONDS} seconds at $(date +%Y%m%d:%H:%M:%S.%N)"
+
+if [[ -n "${gzSfc}" ]]; then
+    typeset -r firstMember=*_006_0001
+    say "Adding surface GZ to first member ${firstMember}"
+    cat ${gzSfc} >> ${firstMember}
+fi
 
 say "Moving the output files from ${workdir} to ${ensOutput}"
 mkdir -p   ${ensOutput}
