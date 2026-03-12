@@ -18,16 +18,19 @@ eval $(cclargs -D "" $0 "[${description}]"                         \
   -workdir     "" "" "[path to working directory]"                 \
   ++ $arguments)
 
+## Inputs are not supposed to change during the execution so they are made 'readonly'
 typeset -r ensPostProcess_program=${pgm}
 typeset -r nml
+typeset -r npex
+typeset -r npey
 typeset -r targetGrid
-typeset -r ensInput
 typeset -r gzSfc
 typeset -r ctlmem
+typeset -r ensInput
 typeset -r ensOutput
 typeset -r workdir
 
-scriptName=${0##*/}
+typeset -r scriptName=${0##*/}
 
 function say {
     printf "${scriptName}: ${1}\n"

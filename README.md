@@ -276,6 +276,7 @@ ulimit -c unlimited
 export CMCCONST=.
 export TMG_ON=YES
 export OMP_STACKSIZE=4G ## Or any other value for your system
+export FST_OPTIONS="BACKEND=RSF"
 
 cd ${MIDAS_WORK}
 ```
@@ -308,7 +309,7 @@ This script will provide a PASS or FAIL rating
 ```bash
 ## load the MPI environment
 
-./verify -pgm ${eneryNorm_program} -date 2024091900                    \
+./verify -pgm ${energyNorm_program} -date 2024091900                   \
          -nml ${PWD}/midas/maestro/suites/midas_system_tests/config/Tests/energyNorm/analmean/nml \
          -reference ${MIDAS_ARCHIVE}/reference/2024091900_000_analmean \
          -states ${MIDAS_WORK}/2024091900_000_analmean                 \
