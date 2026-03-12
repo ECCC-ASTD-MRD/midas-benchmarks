@@ -33,9 +33,6 @@
 /
  &NAMBEN
 /
- &NAMS2C
-  mpiMode = 'TILES'
-/
  &NAMDIMO
    NMXOBS=10000
    NDATAMX=100000
@@ -43,9 +40,6 @@
  &NAMTIME
    DSTEPOBS    = 1.0d0
    DSTEPOBSINC = 6.0d0
-/
- &NAMSTIO
-   outputFormat = 'RSF'
 /
  &NAMFILT
   NLIST(1)=10004,

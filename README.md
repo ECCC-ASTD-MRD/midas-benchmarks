@@ -276,7 +276,6 @@ ulimit -c unlimited
 export CMCCONST=.
 export TMG_ON=YES
 export OMP_STACKSIZE=4G ## Or any other value for your system
-export FST_OPTIONS="BACKEND=RSF"
 
 cd ${MIDAS_WORK}
 ```
