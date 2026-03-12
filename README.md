@@ -217,18 +217,17 @@ Here is how to call it:
 ensInput=${MIDAS_ARCHIVE}/ensemble
 targetGrid=${MIDAS_ARCHIVE}/constants/targetGrid_10km
 gzSfc=${MIDAS_ARCHIVE}/constants/GZ_sfc.fstd
+ctlmem=${MIDAS_ARCHIVE}/ensemble_control/*_006_0000
 nml=${PWD}/nml_interpEnsTrials
 npex=30
 npey=20
 
 ./interpEnsTrials -pgm      ${ensPostProcess_program}             \
                   -nml      ${nml}      -targetGrid ${targetGrid} \
+                  -ctlmem   ${ctlmem}   -gzSfc ${gzSfc}           \
                   -npex     ${npex}     -npey       ${npey}       \
                   -ensInput ${ensInput} -ensOutput  ${ensOutput}  \
-                  -gzSfc    ${gzSfc}    -workdir  ${workdir}
-
-## After interpolating the ensemble to 10km, copy the control member (index '_0000' to '${ensOutput}')
-cp -v ${MIDAS_ARCHIVE}/ensemble_control/2024091818_006_0000 ${ensOutput}
+                  -workdir  ${workdir}
 ```
 
 ## Run the benchmark
