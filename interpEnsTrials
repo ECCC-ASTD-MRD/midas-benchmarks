@@ -87,11 +87,6 @@ export OMP_STACKSIZE=4G
 ## Needed to output files in the expected format
 export FST_OPTIONS="BACKEND=RSF"
 
-## When FOR_DUMP_CORE_FILE=1 and the code abort on runtime error, cores
-## will be dumped in the work directory; one per process.
-## Each core can weight O(10) Gb (times the number of processes)
-export FOR_DUMP_CORE_FILE=
-
 say "Start of ${ensPostProcess_program} at $(date +%Y%m%d:%H:%M:%S.%N)"
 say "The listing will be available in the file ${PWD}/listing"
 
