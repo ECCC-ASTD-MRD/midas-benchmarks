@@ -56,6 +56,10 @@ if [[ ! -d "${ensInput}" ]]; then
     die "The directory '${ensInput}' should exist and does not"
 fi
 
+if [[ ! -f "${targetGrid}" ]]; then
+    die "The file '${targetGrid}' should exist and does not"
+fi
+
 if [[ -d "${ensOutput}" ]]; then
     die "The directory '${ensOutput}' should not exist and does"
 fi
@@ -100,6 +104,9 @@ mpirun -n $((npex*npey)) ${ensPostProcess_program} > listing
 say "End of ${ensPostProcess_program} in ${SECONDS} seconds at $(date +%Y%m%d:%H:%M:%S.%N)"
 
 if [[ -n "${gzSfc}" ]]; then
+    if [[ ! -f "${gzSfc}" ]]; then
+        die "The file '${gzSfc}' should exist and does not"
+    fi
     typeset -r firstMember=*_006_0001
     say "Adding surface GZ to first member ${firstMember}"
     cat ${gzSfc} >> ${firstMember}
@@ -110,6 +117,9 @@ mkdir -p   ${ensOutput}
 mv *_006_* ${ensOutput}
 
 if [[ -n "${ctlmem}" ]]; then
+    if [[ ! -f "${ctlmem}" ]]; then
+        die "The file '${ctlmem}' should exist and does not"
+    fi
     say "Copying the control member ${ctlmem} to ${ensOutput}"
     cp ${ctlmem} ${ensOutput}
 fi

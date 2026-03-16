@@ -6,7 +6,7 @@ MIDAS_DBASE_URL=https://hpfx.collab.science.gc.ca/~sixf000/midas-benchmarks
 
 declare -A archiveDatabase
 archiveDatabase[midas_observations.tar.gz]="e143732aea1058eb2875821a0d1ce757 observations"
-archiveDatabase[midas_constants.tar.gz]="ecc469ae59276d60fcb54477258d9c91 constants"
+archiveDatabase[midas_constants.tar.gz]="5d9b3246eae8a2aeb024f57a74798d33 constants"
 archiveDatabase[midas_results.tar]="ce1e65d7dfafef33faf9f25f404a7628 reference"
 #archiveDatabase[midas_ensemble.tar]="75c54da9ac1f41fa314f3306bfab5842 ensemble"
 #archiveDatabase[midas_ensemble_0.tar]="b76118d94c50cbeed74a186eeffe4833 ensemble"

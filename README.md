@@ -34,6 +34,7 @@ the git submodules:
 ```bash
 cd midas-benchmarks
 git submodule update --init --recursive
+cd ..
 ```
 The following instructions assume that you are installing the libraries and
 tools in a directory above the cloned git repo, but you can modify them
@@ -42,7 +43,6 @@ according to your chosen installation.
 ### rmn library
 
 ```bash
-cd ..
 mkdir build-rpn
 cd build-rpn
 cmake -DCMAKE_INSTALL_PREFIX=../rpn-install ../midas-benchmarks/rpn
@@ -224,7 +224,7 @@ npey=20
 
 ./interpEnsTrials -pgm      ${ensPostProcess_program}             \
                   -nml      ${nml}      -targetGrid ${targetGrid} \
-                  -ctlmem   ${ctlmem}   -gzSfc ${gzSfc}           \
+                  -ctlmem   ${ctlmem}   -gzSfc      ${gzSfc}      \
                   -npex     ${npex}     -npey       ${npey}       \
                   -ensInput ${ensInput} -ensOutput  ${ensOutput}  \
                   -workdir  ${workdir}
