@@ -78,8 +78,8 @@ export perftools_LIBRARY_PATH=${PWD}/perf-install/lib
 mkdir build-midas
 cd build-midas
 cmake -DCMAKE_INSTALL_PREFIX=../midas-install ../midas-benchmarks/midas
-make -j
-make install
+make -j install
+cd ..
 ```
 
 From this project, there will be three programs compiled:
@@ -90,9 +90,9 @@ From this project, there will be three programs compiled:
 
 ```bash
 splitobs_program=${PWD}/midas-install/bin/midas.splitobs.Abs
-letkf_program=${PWD}/midas-install/midas-letkf.Abs
-ensPostProcess_program=${PWD}/midas-install/midas-ensPostProcess.Abs
-energyNorm_program=${PWD}/midas-install/midas-energyNorm.Abs
+letkf_program=${PWD}/midas-install/bin/midas-letkf.Abs
+ensPostProcess_program=${PWD}/midas-install/bin/midas-ensPostProcess.Abs
+energyNorm_program=${PWD}/midas-install/bin/midas-energyNorm.Abs
 `̀``
 
 # Run MIDAS (LetKF)
