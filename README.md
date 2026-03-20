@@ -71,13 +71,14 @@ we named `rttov-install` in the following instructions.
 ## MIDAS
 
 ```bash
+export EC_CMAKE_MODULE_PATH=${PWD}/midas-benchmarks/rpn/rmn/cmake_rpn/modules:${EC_CMAKE_MODULE_PATH}
 export CMAKE_PREFIX_PATH=${PWD}/rpn-install:${CMAKE_PREFIX_PATH}
-export rttov_INSTALLDIR=${PWD}/rttov-install
 export perftools_LIBRARY_PATH=${PWD}/perf-install/lib
+export rttov_INSTALLDIR=${PWD}/rttov-install
 
 mkdir build-midas
 cd build-midas
-cmake -DCMAKE_INSTALL_PREFIX=../midas-install ../midas-benchmarks/midas
+cmake -DSQLITE_FORTRAN_SUPPORT=OFF -DCMAKE_INSTALL_PREFIX=../midas-install ../midas-benchmarks/midas
 make -j install
 cd ..
 ```
