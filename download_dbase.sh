@@ -48,15 +48,19 @@ downloadArchive() {
     # ${2} archive destination
     typeset -r archiveName=${1}
 
-    echo Downloading ${MIDAS_DBASE_URL}/${archiveName} to ${archiveName}
-    if which wget 1>/dev/null 2>&1; then
-        wget ${MIDAS_DBASE_URL}/${archiveName} -O ${archiveName}
-    elif which curl 1>/dev/null 2>&1; then
-        curl -o ${archiveName} ${MIDAS_DBASE_URL}/${archiveName}
+    if [ -f "${archiveName}" ]; then
+	echo Not downloading ${archiveName} since it already exists
     else
-        echo "Error: cannot download using wget or curl."
-        echo "Please download database at: ${MIDAS_DBASE_URL}"
-        exit 1
+	echo Downloading ${MIDAS_DBASE_URL}/${archiveName} to ${archiveName}
+	if which wget 1>/dev/null 2>&1; then
+            wget ${MIDAS_DBASE_URL}/${archiveName} -O ${archiveName}
+	elif which curl 1>/dev/null 2>&1; then
+            curl -o ${archiveName} ${MIDAS_DBASE_URL}/${archiveName}
+	else
+            echo "Error: cannot download using wget or curl."
+            echo "Please download database at: ${MIDAS_DBASE_URL}"
+            exit 1
+	fi
     fi
 } ## End of function 'downloadArchive()'
 
