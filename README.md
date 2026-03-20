@@ -71,7 +71,7 @@ we named `rttov-install` in the following instructions.
 ## MIDAS
 
 ```bash
-export EC_CMAKE_MODULE_PATH=${PWD}/midas-benchmarks/rpn/rmn/cmake_rpn/modules:${EC_CMAKE_MODULE_PATH}
+export EC_CMAKE_MODULE_PATH=${PWD}/midas-benchmarks/rpn/cmake_rpn/modules:${CMAKE_MODULE_PATH}
 export CMAKE_PREFIX_PATH=${PWD}/rpn-install:${CMAKE_PREFIX_PATH}
 export perftools_LIBRARY_PATH=${PWD}/perf-install/lib
 export rttov_INSTALLDIR=${PWD}/rttov-install
