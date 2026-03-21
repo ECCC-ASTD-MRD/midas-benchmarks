@@ -78,6 +78,7 @@ variable `MKL_SUPPORT`).
 ```bash
 export EC_CMAKE_MODULE_PATH="${PWD}/midas-benchmarks/rpn/cmake_rpn/modules;${CMAKE_MODULE_PATH}"
 export CMAKE_PREFIX_PATH=${PWD}/rpn-install:${CMAKE_PREFIX_PATH}
+export PATH=${PWD}/rpn-install/bin:${PATH}
 export LIBRARY_PATH=${PWD}/perf-install/lib:${LIBRARY_PATH}
 export rttov_INSTALLDIR=${PWD}/rttov-install
 
