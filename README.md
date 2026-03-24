@@ -70,20 +70,24 @@ we named `rttov-install` in the following instructions.
 
 ## MIDAS
 
+To compile MIDAS, follow the steps below.  You have to choose if you
+compile with or without Intel MKL mathematical library support (see
+variable `MKL_SUPPORT`).
+
 ```bash
 export EC_CMAKE_MODULE_PATH=${PWD}/midas-benchmarks/rpn/cmake_rpn/modules:${CMAKE_MODULE_PATH}
 export CMAKE_PREFIX_PATH=${PWD}/rpn-install:${CMAKE_PREFIX_PATH}
-export perftools_LIBRARY_PATH=${PWD}/perf-install/lib
+export LIBRARY_PATH=${PWD}/perf-install/lib:${LIBRARY_PATH}
 export rttov_INSTALLDIR=${PWD}/rttov-install
 
 mkdir build-midas
 cd build-midas
-cmake -DSQLITE_FORTRAN_SUPPORT=OFF -DCMAKE_INSTALL_PREFIX=../midas-install ../midas-benchmarks/midas
+cmake -DMKL_SUPPORT="ON or OFF" -DCMAKE_INSTALL_PREFIX=../midas-install ../midas-benchmarks/midas
 make -j install
 cd ..
 ```
 
-From this project, there will be three programs compiled:
+From this project, there will be four programs compiled:
  * `midas.splitobs.Abs`: needed in the preprocessing step
  * `midas-letkf.Abs`: HPC benchmarking program
  * `midas-energyNorm.Abs`: needed in the evaluation step
@@ -156,6 +160,8 @@ ulimit -c unlimited
 export CMCCONST=.
 export TMG_ON=YES
 export OMP_STACKSIZE=4G ## Or any other value for your system
+npex=3
+npey=2
 
 cd ${MIDAS_WORK}
 ```
