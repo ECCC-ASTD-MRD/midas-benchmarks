@@ -6,6 +6,7 @@ You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/mi
 
 # Requirements
 
+* CMake (version >= 3.20)
 * Fortran and C compiler. These codes have been tested with compilers from GNU and Intel OneAPI (classic and llvm based)
 * An MPI implementation such as OpenMPI, MPICH or Intel MPI (with development package)
 * OpenMP support
@@ -13,9 +14,9 @@ You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/mi
 * RTTOV version 13
   * You can get this library by going to [NWP SAF | Numerical Weather Prediction Satellite Application Facility](https://nwp-saf.eumetsat.int/site/), create an account and download it.
 * HDF5/netCDF
-* SQLite with development package (version >= 3.26.0)
-* CMake (version >= 3.20)
 * Python 3
+* SQLite with development package (version >= 3.26.0)
+* `Libxml2` library
 
 # Build MIDAS
 
