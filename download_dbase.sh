@@ -5,9 +5,9 @@ set -euo pipefail
 MIDAS_DBASE_URL=https://hpfx.collab.science.gc.ca/~sixf000/midas-benchmarks
 
 declare -A archiveDatabase
-archiveDatabase[midas_observations.tar.gz]="e143732aea1058eb2875821a0d1ce757 observations"
-archiveDatabase[midas_constants.tar.gz]="5d9b3246eae8a2aeb024f57a74798d33 constants"
-archiveDatabase[midas_results.tar]="ce1e65d7dfafef33faf9f25f404a7628 reference"
+archiveDatabase[midas_observations.tar.gz]="59feb2005176dfd3add16e078c698549 observations"
+archiveDatabase[midas_constants.tar.gz]="fabfca5e8ab5e09d5426487f24a0bd96 constants"
+archiveDatabase[midas_results.tar]="5fdd554e95c9c6ab33483d00bca998a4 reference"
 #archiveDatabase[midas_ensemble.tar]="75c54da9ac1f41fa314f3306bfab5842 ensemble"
 #archiveDatabase[midas_ensemble_0.tar]="b76118d94c50cbeed74a186eeffe4833 ensemble"
 #archiveDatabase[midas_ensemble_1.tar]="6d8537671c87cdba618b22a45600c3d9 ensemble"
