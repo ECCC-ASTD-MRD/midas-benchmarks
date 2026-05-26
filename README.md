@@ -6,15 +6,17 @@ You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/mi
 
 # Requirements
 
-* Fortran and C compiler. Theses codes have been tested with compilers from GNU and Intel OneAPI (classic and llvm based)
+* CMake (version >= 3.20)
+* Fortran and C compiler. These codes have been tested with compilers from GNU and Intel OneAPI (classic and llvm based)
 * An MPI implementation such as OpenMPI, MPICH or Intel MPI (with development package)
 * OpenMP support
-* BLAS, LAPACK or equivalent mathematical/scientific library (ie: MKL), with development package and thread-safe support
+* BLAS, LAPACK or equivalent mathematical/scientific library (ie: Intel MKL), with development package and thread-safe support
 * RTTOV version 13
   * You can get this library by going to [NWP SAF | Numerical Weather Prediction Satellite Application Facility](https://nwp-saf.eumetsat.int/site/), create an account and download it.
-* SQLite with development package (version >= 3.26.0)
-* CMake (version >= 3.20)
+* HDF5/netCDF
 * Python 3
+* SQLite with development package (version >= 3.26.0)
+* `Libxml2` library
 
 # Build MIDAS
 
@@ -23,73 +25,87 @@ You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/mi
 Compiler specific definitions and flags are defined within the
 ```cmake_rpn``` submodule of each code repository. If you need to
 change or add any, you can add or modify the rules into `[git source
-path]/cmake_rpn/modules/ec_compiler_presets/default/[architecture]/`
+path]/rpn/cmake_rpn/modules/ec_compiler_presets/default/[architecture]/`
 
 ## Build base libraries
 
-### LibRMN
-
-Ces commandes doivent être revues!
+After cloning the git repo, you need to use the following command to get all
+the git submodules:
 
 ```bash
-git clone git@github.com:ECCC-ASTD-MRD/librmn.git
-cd librmn
-git checkout alpha
+cd midas-benchmarks
 git submodule update --init --recursive
-mkdir build
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=[rmn install directory] ..
+cd ..
+```
+The following instructions assume that you are installing the libraries and
+tools in a directory above the cloned git repo, but you can modify them
+according to your chosen installation.
+
+### rmn library
+
+```bash
+mkdir build-rpn
+cd build-rpn
+cmake -DCMAKE_INSTALL_PREFIX=../rpn-install ../midas-benchmarks/rpn
 make install
+cd ..
 ```
 
-### rpn_comm
+### perftools
 
-Insérer les commandes pour compiler!
+```bash
+cd midas-benchmarks/perftools/src
+make
+INSTALL_DIR=../../../../perf-install make install
+cd ../../..
+```
 
-### VGrid
+### RTTOV 13 library
 
-Insérer les commandes pour compiler!
+You can get this library by going to [NWP SAF | Numerical Weather Prediction
+Satellite Application Facility](https://nwp-saf.eumetsat.int/site/), create
+an account and download it.
 
-### `burp-tools`
-
-Insérer les commandes pour compiler!
-
-### RPN-SI `random`
-
-Insérer les commandes pour compiler!
-
-### hpcoperf
-
-Insérer les commandes pour compiler!
-
-### `cclargs`
-
-Les scripts `midas.prepare_workdir` et `verify` utilisent de
-`cclargs`.  Est-ce compliqué d'ajouter cet outil dans le package?
-
-Je peux aussi convertir la logique de `cclargs` à du `bash` standard.
+Follow the instructions and install it in a separate directory, which
+we named `rttov-install` in the following instructions.
 
 ## MIDAS
 
-Ces commandes doivent être revues!
+To compile MIDAS, follow the steps below.  You have to choose if you
+compile with or without Intel MKL mathematical library support (see
+variable `MKL_SUPPORT`).
 
 ```bash
-## load the compiling environment
+export EC_CMAKE_MODULE_PATH="${PWD}/midas-benchmarks/rpn/cmake_rpn/modules;${CMAKE_MODULE_PATH}"
+export CMAKE_PREFIX_PATH=${PWD}/rpn-install:${CMAKE_PREFIX_PATH}
+export PATH=${PWD}/rpn-install/bin:${PATH}
+export LIBRARY_PATH=${PWD}/perf-install/lib:${LIBRARY_PATH}
+export rttov_INSTALLDIR=${PWD}/rttov-install
 
-mkdir midas/build
-cd midas/build
-
-cmake ..
-
-make -j
+mkdir build-midas
+cd build-midas
+cmake -DMKL_SUPPORT="ON or OFF" -DCMAKE_INSTALL_PREFIX=../midas-install ../midas-benchmarks/midas
+make -j install
+cd ..
 ```
 
-From this project, there will be three programs compiled:
+From this project, there will be four programs compiled:
  * `midas.splitobs.Abs`: needed in the preprocessing step
  * `midas-letkf.Abs`: HPC benchmarking program
  * `midas-energyNorm.Abs`: needed in the evaluation step
+ * `midas-ensPostProcess.Abs`: needed in the evaluation step
+
+```bash
+splitobs_program=${PWD}/midas-install/bin/midas.splitobs.Abs
+letkf_program=${PWD}/midas-install/bin/midas-letkf.Abs
+ensPostProcess_program=${PWD}/midas-install/bin/midas-ensPostProcess.Abs
+energyNorm_program=${PWD}/midas-install/bin/midas-energyNorm.Abs
+`̀``
 
 # Run MIDAS (LetKF)
+
+From here, we assume the working directory is where the code
+`midas-benchmarks` have been downloaded.
 
 ## Download database
 
@@ -106,7 +122,127 @@ file.  Since this step can be quite long, you can skip that step by
 setting the environment variable `DOWNLOAD_DBASE_CHECK_MD5SUM` to
 `no`.
 
-## Choice of CPU decomposition
+## Testing the execution environment
+
+### Prepare the working directory
+
+We provide a small configuration 8 members at 100km resolution to test
+the execution environment.
+
+The variable `${MIDAS_WORK}` should be set to the working directory
+where the program will run.  The values `${npex}` and `${npey}` are
+the MPI decomposition.  For this small test, some values are
+suggested.  And the `${splitobs_program}` is the path to the program
+`midas.splitobs.Abs` that has been compiled at the build step.
+
+You can prepare the working directory with
+```bash
+## For this small test, we suggest this MPI decomposition
+npex=3
+npey=2
+
+midas/tools/midas_scripts/midas.prepare_workdir -workdir      ${MIDAS_WORK}                 \
+                                                -nml          ${PWD}/nml_100km              \
+                                                -ensemble     ${MIDAS_ARCHIVE}/ensemble     \
+                                                -observations ${MIDAS_ARCHIVE}/observations \
+                                                -constants    ${MIDAS_ARCHIVE}/constants    \
+                                                -splitobs     ${splitobs_program}           \
+                                                -npex ${npex} -npey ${npey}
+```
+
+### Prepare the execution environment
+
+Before running to program, make sure to set those variables:
+
+```bash
+## load the MPI environment
+
+ulimit -c unlimited
+
+export CMCCONST=.
+export TMG_ON=YES
+export OMP_STACKSIZE=4G ## Or any other value for your system
+npex=3
+npey=2
+
+cd ${MIDAS_WORK}
+```
+
+### Run the program
+
+With `${letkf_program}` as the path to the program `midas-letkf.Abs`
+that has been compiled at the build step, launch the program with:
+
+```bash
+## It is important to always recreate the 'obs' subdirectory before each execution
+rm -rf obs
+cp -r obsfiles_split obs
+
+mpirun -n $((npex*npey)) ${letkf_program}
+```
+
+### Checking the results
+
+This execution should generate this list of files:
+ * `2024091818_006_trialmean`
+ * `2024091818_006_trialrms`
+ * `2024091818_006_trialrms_ascii`
+ * `2024091900_000_0000`
+ * `2024091900_000_0001`
+ * `2024091900_000_0002`
+ * `2024091900_000_0003`
+ * `2024091900_000_0004`
+ * `2024091900_000_0005`
+ * `2024091900_000_0006`
+ * `2024091900_000_0007`
+ * `2024091900_000_0008`
+ * `2024091900_000_analmean`
+ * `2024091900_000_analrms`
+ * `2024091900_000_analrms_ascii`
+ * `2024091900_000_inc_0000`
+ * `2024091900_000_inc_0001`
+ * `2024091900_000_inc_0002`
+ * `2024091900_000_inc_0003`
+ * `2024091900_000_inc_0004`
+ * `2024091900_000_inc_0005`
+ * `2024091900_000_inc_0006`
+ * `2024091900_000_inc_0007`
+ * `2024091900_000_inc_0008`
+ * `obs/obs*_*_*`
+
+
+## Interpolate the ensemble trials from 100km to 10km
+
+To avoid downloading terabytes of data, a set of low resolution, at
+100km, ensemble trials have been prepared and should have been
+downloading in step [Download database](#download-database).  Then you
+need to interpolate them at 10km.  The program `midas-ensPostprocess`
+can be used for that in combination with the script `interpEnsTrials`.
+You will need a total of around 24TB fo RAM to run this step which
+will be equally distributed amongst the 30x20 MPI ranks.
+
+Set `${ensOutput}` and `${workdir}` to path where there is 5TB of free
+space and launch the interpolation with:
+`̀``bash
+ensInput=${MIDAS_ARCHIVE}/ensemble
+targetGrid=${MIDAS_ARCHIVE}/constants/targetGrid_10km
+gzSfc=${MIDAS_ARCHIVE}/constants/GZ_sfc.fstd
+ctlmem=${MIDAS_ARCHIVE}/ensemble_control/*_006_0000
+nml=${PWD}/nml_interpEnsTrials
+npex=30
+npey=20
+
+./interpEnsTrials -pgm      ${ensPostProcess_program}             \
+                  -nml      ${nml}      -targetGrid ${targetGrid} \
+                  -ctlmem   ${ctlmem}   -gzSfc      ${gzSfc}      \
+                  -npex     ${npex}     -npey       ${npey}       \
+                  -ensInput ${ensInput} -ensOutput  ${ensOutput}  \
+                  -workdir  ${workdir}
+```
+
+## Run the benchmark
+
+### Choose the CPU decomposition
 
 This will give you the possible CPU decomposition for the MIDAS LetKF global 10km configuration:
 
@@ -117,7 +253,7 @@ midas/tools/midas_scripts/midas.mpiTopoFinder --ni 3124 --nj 2084          \
                --max-diff  "maximum difference of grid points per MPI task allowed (in percentage) between the regular distribution and the last MPI task"
 ```
 
-## Prepare working directory
+### Prepare the working directory
 
 The variable `${MIDAS_WORK}` should be set to the working directory
 where the program will run.  The values `${npex}` and `${npey}` are
@@ -127,7 +263,8 @@ that has been compiled at the build step.
 
 ```bash
 midas/tools/midas_scripts/midas.prepare_workdir -workdir      ${MIDAS_WORK}                 \
-                                                -ensemble     ${MIDAS_ARCHIVE}/ensemble     \
+                                                -nml          ${PWD}/nml_10km               \
+                                                -ensemble     ${ensOutput}                  \
                                                 -observations ${MIDAS_ARCHIVE}/observations \
                                                 -constants    ${MIDAS_ARCHIVE}/constants    \
                                                 -splitobs     ${splitobs_program}           \
@@ -137,7 +274,7 @@ midas/tools/midas_scripts/midas.prepare_workdir -workdir      ${MIDAS_WORK}     
 You need to rerun this preparation each time you change the CPU
 decomposition (`${npex}` or `${npey}`).
 
-## Run program (or submit to queuing system):
+### Run the program (or submit to queuing system):
 
 Before running to program, make sure to set those variables:
 
@@ -157,12 +294,9 @@ With `${letkf_program}` as the path to the program `midas-letkf.Abs`
 that has been compiled at the build step, launch the program with:
 
 ```bash
-cat > ptopo_nml <<EOF
- &ptopo
-  npex=${npex}
-  npey=${npey}
-/
-EOF
+## It is important to always recreate the 'obs' subdirectory before each execution
+rm -rf obs
+cp -r obsfiles_split obs
 
 mpirun -n $((npex*npey)) ${letkf_program}
 ```
@@ -184,7 +318,7 @@ This script will provide a PASS or FAIL rating
 ```bash
 ## load the MPI environment
 
-./verify -pgm ${eneryNorm_program} -date 2024091900                    \
+./verify -pgm ${energyNorm_program} -date 2024091900                   \
          -nml ${PWD}/midas/maestro/suites/midas_system_tests/config/Tests/energyNorm/analmean/nml \
          -reference ${MIDAS_ARCHIVE}/reference/2024091900_000_analmean \
          -states ${MIDAS_WORK}/2024091900_000_analmean                 \

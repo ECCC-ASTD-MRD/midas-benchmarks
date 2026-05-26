@@ -6,7 +6,7 @@ typeset -r description="This script launches the program 'midas-energyNorm.Abs'"
 
 arguments=$*
 eval $(cclargs -D "" $0 "[${description}]"                                               \
-  -pgm         "" "" "[path to MIDAS 'energyNorm program]"                               \
+  -pgm         "" "" "[path to MIDAS 'energyNorm' program]"                              \
   -nml         "" "" "[path to namelist file]"                                           \
   -date        "" "" "[date of the input files]"                                         \
   -reference   "" "" "[path to reference file]"                                          \
@@ -61,10 +61,13 @@ if [[ -n "${nml}" ]]; then
     fi
 fi
 
+npex=5
+npey=4
+
 cat > ptopo_nml <<EOF
  &ptopo
-  npex=1
-  npey=1
+  npex=${npex}
+  npey=${npey}
 /
 EOF
 
@@ -82,7 +85,6 @@ ulimit -c unlimited
 
 export TMG_ON=YES
 export OMP_STACKSIZE=4G
-#export OMP_NUM_THREADS=${omp_num_threads}
 
 export MIDAS_DATE=${date}
 
@@ -96,7 +98,7 @@ say "The listing will be available in the file ${PWD}/listing"
 
 SECONDS=0
 
-mpirun -n 1 ${energyNorm_program} > listing
+mpirun -n $((npex*npey)) ${energyNorm_program} > listing
 
 say "End of ${energyNorm_program} in ${SECONDS} seconds at $(date +%Y%m%d:%H:%M:%S.%N)"
 
@@ -116,12 +118,12 @@ while read -u3 line; do
         fileName=$(echo ${line} | awk '{print $1}')
         totalEnergy=$(echo ${line} | awk '{print $2}')
 
-        if (( $(echo "${totalEnergy} > ${energyNorm_threshold}" |bc -l) )); then
-            result=FAIL
-            someFailed=true
-        else
-            result=pass
-        fi
+        result=$(python3 -c "
+if ${totalEnergy} > ${energyNorm_threshold}:
+    print('FAIL')
+else:
+    print('pass')
+")
 
         resultMessages+=("${result} for ${fileName} (${totalEnergy} vs ${energyNorm_threshold})")
     fi

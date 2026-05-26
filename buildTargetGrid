@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -ueo pipefail
+
+inputFile=${1:?"buildTargetGrid: You must specify a first argument which is the input ensemble trials"}
+targetGrid=${2:?"buildTargetGrid: You must specify a second argument which is the output file containing the target grid"}
+
+if [[ -f "${targetGrid}" ]]; then
+    echo "buildTargetGrid: The output target grid must not exist at '${targetGrid}'." >&2
+    exit 1
+fi
+
+set +ux
+which editfst > /dev/null 2>&1 || . r.load.dot eccc/mrd/rpn/utils/20251009-beta
+set -u
+
+editfst -s ${inputFile} -d ${targetGrid} -n -m error -i <<EOF
+ desire(-1,'P0',-1,-1,-1,6)
+ desire(-1,['^>','>>','^^','!!'])
+ zap(-1,-1,'TARGETGRID')
+EOF
+
+editfst -s ${inputFile} -d ${targetGrid} -n -m error -i <<EOF
+ desire(-1,'TT',-1,-1,-1,6)
+ zap(-1,'TH','TARGETGRID')
+EOF
+
+editfst -s ${inputFile} -d ${targetGrid} -n -m error -i <<EOF
+ desire(-1,'UU',-1,-1,-1,6)
+ zap(-1,'MM','TARGETGRID')
+EOF

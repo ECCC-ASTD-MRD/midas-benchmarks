@@ -1,0 +1,71 @@
+#!/bin/bash
+
+set -ueo pipefail
+
+encoding=${1:?"reencodeEnsTrials: The encoding must be the first argument."}
+ensTrialsInputDir=${2:?"reencodeEnsTrials: You must specify a second argument which is a directory containing to files to process."}
+ensTrialsOutputDir=${3:?"reencodeEnsTrials: You must specify a third argument which is a directory where the files processed will be stored."}
+
+REENCODEENSTRIALS_THREADS=${REENCODEENSTRIALS_THREADS:-1}
+REENCODEENSTRIALS_TMPDIR=${REENCODEENSTRIALS_TMPDIR:-}
+
+set +ux
+which pgsm > /dev/null 2>&1 || . r.load.dot eccc/mrd/rpn/utils/20251009-beta
+set -u
+
+encodeFile () {
+    typeset -r encoding=${1:?"reencodeEnsTrials.encodeFile: You must specify an encoding"}
+    typeset -r inputFile=${2:?"reencodeEnsTrials.encodeFile: You must specify an input file"}
+    typeset -r outputDir=${3:?"reencodeEnsTrials.encodeFile: You must specify an output director"}
+
+    typeset -r outputFileFinal=${ensTrialsOutputDir}/$(basename ${inputFile})
+    [ -f "${outputFileFinal}" ] && rm ${outputFileFinal}
+
+    if [[ -n "${REENCODEENSTRIALS_TMPDIR}" ]]; then
+        typeset -r outputFile=${REENCODEENSTRIALS_TMPDIR}/$(basename ${inputFile})
+        [ -f "${outputFile}" ] && rm ${outputFile}
+    else
+        typeset -r outputFile=${outputFileFinal}
+    fi
+
+    pgsm -iment ${inputFile} -ozsrt ${outputFile} -msglvl error -i <<EOF
+ compac=-${encoding}
+ compress=oui
+ sortie(std,400,r)
+ grille(comme, fentree,'TT',  '  ',-1, -1, -1, -1, '            ')
+ heure(tout)
+ champ('TT')
+ champ('HU')
+ champ(UU, TOUT)
+ champ(VV, TOUT)
+EOF
+    editfst -s ${inputFile} -d ${outputFile} -n -m error -i <<EOF
+ desire(-1,'P0')
+ desire(-1,'GZ')
+ desire(-1,'TG')
+ desire(-1,['^>','>>','^^'])
+EOF
+
+    if [[ -n "${REENCODEENSTRIALS_TMPDIR}" ]]; then
+        cp ${outputFile} ${outputFileFinal}
+        rm ${outputFile}
+    fi
+
+    ls -ahl ${inputFile} ${outputFileFinal}
+} ## End of routine 'encodeFile'
+
+[ ! -d "${ensTrialsOutputDir}" ] && mkdir -p ${ensTrialsOutputDir}
+
+let concurrentEncodings=1
+for inputFile in ${ensTrialsInputDir}/*; do
+    encodeFile ${encoding} ${inputFile} ${ensTrialsOutputDir} &
+    if (( concurrentEncodings == REENCODEENSTRIALS_THREADS )); then
+        ## Wait for all the concurrent threads to complete
+        time wait
+        let concurrentEncodings=0 || true
+    fi
+    let concurrentEncodings=concurrentEncodings+1
+done
+
+## Wait for any leftovers
+time wait
