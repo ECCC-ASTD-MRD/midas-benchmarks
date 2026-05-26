@@ -29,10 +29,13 @@ path]/rpn/cmake_rpn/modules/ec_compiler_presets/default/[architecture]/`
 
 ## Build base libraries
 
-After cloning the git repo, you need to use the following command to get all
-the git submodules:
+After cloning the Git repo, you need to use the following command to get all
+the Git submodules:
 
 ```bash
+mkdir ${MIDAS_BENCHMARKS_DIRECTORY}
+cd ${MIDAS_BENCHMARKS_DIRECTORY}
+git clone git@gitlab.science.gc.ca:atmospheric-data-assimilation/midas-benchmarks.git
 cd midas-benchmarks
 git submodule update --init --recursive
 cd ..
