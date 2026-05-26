@@ -22,6 +22,7 @@
    alphaRandomPertSubSample = 0.00D0
    imposeSaturationLimit    = .false.
    imposeRttovHuLimits      = .false.
+   writeAsciiRmsStats       = .false.
 /
  &NAMWRITEDIAG
    lWriteDiagSql   = .false.
