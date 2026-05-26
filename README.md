@@ -51,15 +51,6 @@ make install
 cd ..
 ```
 
-### perftools
-
-```bash
-cd midas-benchmarks/perftools/src
-make
-INSTALL_DIR=../../../../perf-install make install
-cd ../../..
-```
-
 ### RTTOV 13 library
 
 You can get this library by going to [NWP SAF | Numerical Weather Prediction
@@ -79,8 +70,8 @@ variable `MKL_SUPPORT`).
 export EC_CMAKE_MODULE_PATH="${PWD}/midas-benchmarks/rpn/cmake_rpn/modules;${CMAKE_MODULE_PATH}"
 export CMAKE_PREFIX_PATH=${PWD}/rpn-install:${CMAKE_PREFIX_PATH}
 export PATH=${PWD}/rpn-install/bin:${PATH}
-export LIBRARY_PATH=${PWD}/perf-install/lib:${LIBRARY_PATH}
 export rttov_INSTALLDIR=${PWD}/rttov-install
+export MIDAS_COMPILE_EXTLIBS="f90sqlite,udfsqlite,perftools"
 
 mkdir build-midas
 cd build-midas
