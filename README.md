@@ -76,7 +76,7 @@ compile with or without Intel MKL mathematical library support (see
 variable `MKL_SUPPORT`).
 
 ```bash
-export EC_CMAKE_MODULE_PATH=${PWD}/midas-benchmarks/rpn/cmake_rpn/modules:${CMAKE_MODULE_PATH}
+export EC_CMAKE_MODULE_PATH="${PWD}/midas-benchmarks/rpn/cmake_rpn/modules;${CMAKE_MODULE_PATH}"
 export CMAKE_PREFIX_PATH=${PWD}/rpn-install:${CMAKE_PREFIX_PATH}
 export LIBRARY_PATH=${PWD}/perf-install/lib:${LIBRARY_PATH}
 export rttov_INSTALLDIR=${PWD}/rttov-install
@@ -218,9 +218,10 @@ downloading in step [Download database](#download-database).  Then you
 need to interpolate them at 10km.  The program `midas-ensPostprocess`
 can be used for that in combination with the script `interpEnsTrials`.
 You will need a total of around 24TB fo RAM to run this step which
-will be equally distributed amound the 30x20 MPI ranks.
+will be equally distributed amongst the 30x20 MPI ranks.
 
-Here is how to call it:
+Set `${ensOutput}` and `${workdir}` to path where there is 5TB of free
+space and launch the interpolation with:
 `̀``bash
 ensInput=${MIDAS_ARCHIVE}/ensemble
 targetGrid=${MIDAS_ARCHIVE}/constants/targetGrid_10km
