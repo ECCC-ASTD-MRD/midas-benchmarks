@@ -11,8 +11,8 @@ You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/mi
 * An MPI implementation such as OpenMPI, MPICH or Intel MPI (with development package)
 * OpenMP support
 * BLAS, LAPACK or equivalent mathematical/scientific library (ie: Intel MKL), with development package and thread-safe support
-* RTTOV version 13
-  * You can get this library by going to [NWP SAF | Numerical Weather Prediction Satellite Application Facility](https://nwp-saf.eumetsat.int/site/), create an account and download it.
+* RTTOV version 13.0
+  * You can get this library by going to [NWP SAF RTTOV v13 web page](https://nwp-saf.eumetsat.int/site/software/rttov/rttov-v13), create an account and download it.
 * HDF5/netCDF
 * Python 3
 * SQLite with development package (version >= 3.26.0)
