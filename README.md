@@ -35,7 +35,7 @@ the Git submodules:
 ```bash
 mkdir ${MIDAS_BENCHMARKS_DIRECTORY}
 cd ${MIDAS_BENCHMARKS_DIRECTORY}
-git clone git@gitlab.science.gc.ca:atmospheric-data-assimilation/midas-benchmarks.git
+git clone https://github.com/ECCC-ASTD-MRD/midas-benchmarks.git
 cd midas-benchmarks
 git submodule update --init --recursive
 cd ..
