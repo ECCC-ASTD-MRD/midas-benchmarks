@@ -49,8 +49,8 @@ according to your chosen installation.
 ```bash
 mkdir build-rpn
 cd build-rpn
-cmake -DCMAKE_INSTALL_PREFIX=../rpn-install ../midas-benchmarks/rpn
-make install
+cmake -DCMAKE_INSTALL_PREFIX=../rpn-install ${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks/rpn
+make -j install
 cd ..
 ```
 
@@ -70,15 +70,17 @@ compile with or without Intel MKL mathematical library support (see
 variable `MKL_SUPPORT`).
 
 ```bash
-export EC_CMAKE_MODULE_PATH="${PWD}/midas-benchmarks/rpn/cmake_rpn/modules;${CMAKE_MODULE_PATH}"
-export CMAKE_PREFIX_PATH=${PWD}/rpn-install:${CMAKE_PREFIX_PATH}
-export PATH=${PWD}/rpn-install/bin:${PATH}
-export rttov_INSTALLDIR=${PWD}/rttov-install
+export EC_CMAKE_MODULE_PATH="${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks/rpn/cmake_rpn/modules;${CMAKE_MODULE_PATH}"
+export CMAKE_PREFIX_PATH=${MIDAS_BENCHMARKS_DIRECTORY}/rpn-install:${CMAKE_PREFIX_PATH}
+export PATH=${MIDAS_BENCHMARKS_DIRECTORY}/rpn-install/bin:${PATH}
+## The variable 'rttov_INSTALLDIR' should be set to the RTTOV13 install directory
+## Here, we suppose it is install in the same directory as other libraries
+export rttov_INSTALLDIR=${MIDAS_BENCHMARKS_DIRECTORY}/rttov-install
 export MIDAS_COMPILE_EXTLIBS="f90sqlite,udfsqlite,perftools"
 
 mkdir build-midas
 cd build-midas
-cmake -DMKL_SUPPORT="ON or OFF" -DCMAKE_INSTALL_PREFIX=../midas-install ../midas-benchmarks/midas
+cmake -DMKL_SUPPORT="ON or OFF" -DCMAKE_INSTALL_PREFIX=../midas-install ${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks/midas
 make -j install
 cd ..
 ```
@@ -90,10 +92,10 @@ From this project, there will be four programs compiled:
  * `midas-ensPostProcess.Abs`: needed in the evaluation step
 
 ```bash
-splitobs_program=${PWD}/midas-install/bin/midas.splitobs.Abs
-letkf_program=${PWD}/midas-install/bin/midas-letkf.Abs
-ensPostProcess_program=${PWD}/midas-install/bin/midas-ensPostProcess.Abs
-energyNorm_program=${PWD}/midas-install/bin/midas-energyNorm.Abs
+splitobs_program=${MIDAS_BENCHMARKS_DIRECTORY}/midas-install/bin/midas.splitobs.Abs
+letkf_program=${MIDAS_BENCHMARKS_DIRECTORY}/midas-install/bin/midas-letkf.Abs
+ensPostProcess_program=${MIDAS_BENCHMARKS_DIRECTORY}/midas-install/bin/midas-ensPostProcess.Abs
+energyNorm_program=${MIDAS_BENCHMARKS_DIRECTORY}/midas-install/bin/midas-energyNorm.Abs
 `̀``
 
 # Run MIDAS (LetKF)
