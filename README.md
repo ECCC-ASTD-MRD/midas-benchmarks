@@ -154,6 +154,7 @@ Before running to program, make sure to set those variables:
 ## load the MPI environment
 
 ulimit -c unlimited
+ulimit -s unlimited
 
 export CMCCONST=.
 export TMG_ON=YES
@@ -278,6 +279,7 @@ Before running to program, make sure to set those variables:
 ## load the MPI environment
 
 ulimit -c unlimited
+ulimit -s unlimited
 
 export CMCCONST=.
 export TMG_ON=YES

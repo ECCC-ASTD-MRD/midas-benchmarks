@@ -87,6 +87,7 @@ ln -s ${ensInput} ensemble_trial
 ln -s ${targetGrid} targetgrid
 
 ulimit -c unlimited
+ulimit -s unlimited
 
 export TMG_ON=YES
 export OMP_STACKSIZE=4G

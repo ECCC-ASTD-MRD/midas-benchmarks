@@ -82,6 +82,7 @@ for stateFile in $(echo ${states} | tr ' '  '\n'); do
 done
 
 ulimit -c unlimited
+ulimit -s unlimited
 
 export TMG_ON=YES
 export OMP_STACKSIZE=4G
