@@ -70,13 +70,13 @@ compile with or without Intel MKL mathematical library support (see
 variable `MKL_SUPPORT`).
 
 ```bash
+export MIDAS_COMPILE_EXTLIBS="f90sqlite,udfsqlite,perftools"
 export EC_CMAKE_MODULE_PATH="${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks/rpn/cmake_rpn/modules;${CMAKE_MODULE_PATH}"
 export CMAKE_PREFIX_PATH=${MIDAS_BENCHMARKS_DIRECTORY}/rpn-install:${CMAKE_PREFIX_PATH}
 export PATH=${MIDAS_BENCHMARKS_DIRECTORY}/rpn-install/bin:${PATH}
 ## The variable 'rttov_INSTALLDIR' should be set to the RTTOV13 install directory
 ## Here, we suppose it is install in the same directory as other libraries
 export rttov_INSTALLDIR=${MIDAS_BENCHMARKS_DIRECTORY}/rttov-install
-export MIDAS_COMPILE_EXTLIBS="f90sqlite,udfsqlite,perftools"
 
 mkdir build-midas
 cd build-midas
@@ -87,14 +87,14 @@ cd ..
 
 From this project, there will be four programs compiled:
  * `midas.splitobs.Abs`: needed in the preprocessing step
+ * `midas-ensPostProcess.Abs`: needed in the preprocessing step
  * `midas-letkf.Abs`: HPC benchmarking program
  * `midas-energyNorm.Abs`: needed in the evaluation step
- * `midas-ensPostProcess.Abs`: needed in the evaluation step
 
 ```bash
 splitobs_program=${MIDAS_BENCHMARKS_DIRECTORY}/midas-install/bin/midas.splitobs.Abs
-letkf_program=${MIDAS_BENCHMARKS_DIRECTORY}/midas-install/bin/midas-letkf.Abs
 ensPostProcess_program=${MIDAS_BENCHMARKS_DIRECTORY}/midas-install/bin/midas-ensPostProcess.Abs
+letkf_program=${MIDAS_BENCHMARKS_DIRECTORY}/midas-install/bin/midas-letkf.Abs
 energyNorm_program=${MIDAS_BENCHMARKS_DIRECTORY}/midas-install/bin/midas-energyNorm.Abs
 `̀``
 
@@ -110,7 +110,7 @@ where all the files will be downloaded on your system.
 
 Download the data needed to run `midas-letkf.Abs`:
 ```bash
-./download_dbase.sh ${MIDAS_ARCHIVE}
+${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks/download_dbase.sh ${MIDAS_ARCHIVE}
 ```
 
 There will be an automatic check of `md5sum`s for each downloaded
@@ -133,6 +133,8 @@ suggested.  And the `${splitobs_program}` is the path to the program
 
 You can prepare the working directory with
 ```bash
+cd ${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks
+
 ## For this small test, we suggest this MPI decomposition
 npex=3
 npey=2
@@ -221,6 +223,8 @@ will be equally distributed amongst the 30x20 MPI ranks.
 Set `${ensOutput}` and `${workdir}` to path where there is 5TB of free
 space and launch the interpolation with:
 `̀``bash
+cd ${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks
+
 ensInput=${MIDAS_ARCHIVE}/ensemble
 targetGrid=${MIDAS_ARCHIVE}/constants/targetGrid_10km
 gzSfc=${MIDAS_ARCHIVE}/constants/GZ_sfc.fstd
@@ -244,6 +248,8 @@ npey=20
 This will give you the possible CPU decomposition for the MIDAS LetKF global 10km configuration:
 
 ```bash
+cd ${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks
+
 midas/tools/midas_scripts/midas.mpiTopoFinder --ni 3124 --nj 2084          \
                --min-tasks "minimum total number of MPI tasks to consider" \
                --max-tasks "maximum total number of MPI tasks to consider" \
@@ -259,6 +265,8 @@ the MPI decomposition found at the previous step.  And the
 that has been compiled at the build step.
 
 ```bash
+cd ${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks
+
 midas/tools/midas_scripts/midas.prepare_workdir -workdir      ${MIDAS_WORK}                 \
                                                 -nml          ${PWD}/nml_10km               \
                                                 -ensemble     ${ensOutput}                  \
@@ -314,6 +322,8 @@ program can use.
 This script will provide a PASS or FAIL rating
 
 ```bash
+${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks
+
 ## load the MPI environment
 
 ./verify -pgm ${energyNorm_program} -date 2024091900                   \
