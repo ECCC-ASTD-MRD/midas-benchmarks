@@ -23,8 +23,8 @@ You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/mi
 ## Compiler specifics
 
 Compiler specific definitions and flags are defined within the
-```cmake_rpn``` submodule of each code repository. If you need to
-change or add any, you can add or modify the rules into `[git source
+`cmake_rpn` submodule of each code repository. If you need to change
+or add any, you can add or modify the rules into `[git source
 path]/rpn/cmake_rpn/modules/ec_compiler_presets/default/[architecture]/`
 
 ## Build base libraries
@@ -50,7 +50,7 @@ according to your chosen installation.
 mkdir build-rpn
 cd build-rpn
 cmake -DCMAKE_INSTALL_PREFIX=../rpn-install ${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks/rpn
-make -j install
+make --jobs install
 cd ..
 ```
 
@@ -81,7 +81,7 @@ export MIDAS_COMPILE_EXTLIBS="f90sqlite,udfsqlite,perftools"
 mkdir build-midas
 cd build-midas
 cmake -DMKL_SUPPORT="ON or OFF" -DCMAKE_INSTALL_PREFIX=../midas-install ${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks/midas
-make -j install
+make --jobs install
 cd ..
 ```
 
