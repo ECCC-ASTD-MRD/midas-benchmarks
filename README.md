@@ -180,6 +180,13 @@ cp -r obsfiles_split obs
 mpirun -n $((npex*npey)) ${letkf_program}
 ```
 
+Depending on your `mpirun`, you may need to add explicitely the
+environment variables to the `mpirun` call such as:
+```bash
+mpirun -x CMCCONST -x TMG_ON -x OMP_STACKSIZE -n $((npex*npey)) ${letkf_program}
+``̀
+
+
 ### Checking the results
 
 This execution should generate this list of files:
