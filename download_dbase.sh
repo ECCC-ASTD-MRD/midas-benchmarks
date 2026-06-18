@@ -20,7 +20,7 @@ archiveDatabase[midas_results.tar]="5fdd554e95c9c6ab33483d00bca998a4 reference"
 #archiveDatabase[midas_ensemble_8.tar]="3e805b2d96f3fba0f805bb11d64ad645 ensemble"
 #archiveDatabase[midas_ensemble_9.tar]="ad2fa9f002cde53453221ade17ba310d ensemble"
 archiveDatabase[midas_ensemble_100km.tar]="12e4dd4e06b8bfc248a3d6c5b6c8a332 ensemble"
-archiveDatabase[midas_ensemble_10km_control.tar]="d55775eca16d55d6cb3da6f5e5b31619 ensemble_control"
+archiveDatabase[midas_ensemble_10km_control.tar]="52f8f638438f59426a362832b6d1b62b ensemble_control"
 
 printUsage() {
     echo -e "Download a sample database of data files needed to run MIDAS benchmarks."
