@@ -18,10 +18,10 @@ You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/mi
 * SQLite with development package (version >= 3.26.0)
 * `Libxml2` library
 
-### Using `spack` to install the dependencies
+### Using Spack to install the dependencies
 
-The [`spack`](https://spack.readthedocs.io/en/latest/) package
-installer can be used to install all the dependencies.
+The [Spack](https://spack.readthedocs.io/en/latest/) package installer
+can be used to install all the dependencies.
 
 For example, the commands:
 
@@ -40,7 +40,11 @@ spack add sqlite
 spack install
 ```
 
-do install all the software and librairies needed to compile MIDAS.
+will install all the software and librairies needed to compile MIDAS.
+
+For more information about Spack, check the [official
+documentation](https://spack.readthedocs.io/en/latest/) or these
+[notes](https://github.com/PhilippeCarphin/manpage-supplement/blob/main/share/man/man7/spack-notes.org).
 
 # Build MIDAS
 
