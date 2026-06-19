@@ -18,6 +18,30 @@ You should have obtained this benchmark from https://github.com/ECCC-ASTD-MRD/mi
 * SQLite with development package (version >= 3.26.0)
 * `Libxml2` library
 
+### Using `spack` to install the dependencies
+
+The [`spack`](https://spack.readthedocs.io/en/latest/) package
+installer can be used to install all the dependencies.
+
+For example, the commands:
+
+```bash
+spack env activate --create midas-benchmarks
+
+spack add cmake
+spack add gcc@15.2.0
+spack add hdf5+fortran+hl %gcc@15.2.0
+spack add netcdf-fortran %gcc@15.2.0
+spack add openmpi %gcc@15.2.0
+spack add openblas %gcc@15.2.0
+spack add libxml2
+spack add sqlite
+
+spack install
+```
+
+do install all the software and librairies needed to compile MIDAS.
+
 # Build MIDAS
 
 ## Compiler specifics
