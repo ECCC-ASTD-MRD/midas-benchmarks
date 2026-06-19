@@ -100,6 +100,10 @@ say "The listing will be available in the file ${PWD}/listing"
 
 SECONDS=0
 
+## Those variables need to be passed to the program called by 'mpirun'
+## for OpenMPI.
+export OMPI_MCA_mca_base_env_list="TMG_ON;OMP_STACKSIZE;FST_OPTIONS"
+
 mpirun -n $((npex*npey)) ${ensPostProcess_program} > listing
 
 say "End of ${ensPostProcess_program} in ${SECONDS} seconds at $(date +%Y%m%d:%H:%M:%S.%N)"
