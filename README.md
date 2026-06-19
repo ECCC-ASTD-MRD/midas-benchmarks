@@ -356,7 +356,7 @@ Verify the results with the following command providing
 `${eneryNorm_program}` as the path to the program
 `midas-eneryNorm.Abs`.  It is possible to provide results from several
 executions with argument `-states`.  The variable
-`${MIDAS_VERIFY_WQRKDIR}` is the path to the working directory the
+`${MIDAS_VERIFY_WORKDIR}` is the path to the working directory the
 program can use.
 
 This script will provide a PASS or FAIL rating
@@ -375,7 +375,7 @@ cd ${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks
          -nml ${nml}                                 \
          -reference ${reference}                     \
          -states ${letkf_analmean}                   \
-         -workdir ${MIDAS_VERIFY_WQRKDIR}
+         -workdir ${MIDAS_VERIFY_WORKDIR}
 ```
 
 This process is requesting around 155 GB of RAM to run.
