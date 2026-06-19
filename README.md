@@ -254,15 +254,15 @@ will be equally distributed amongst the 30x20 MPI ranks.
 Set `${ensOutput}` and `${workdir}` to path where there is 5TB of free
 space and launch the interpolation with:
 `̀``bash
-cd ${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks
-
 ensInput=${MIDAS_ARCHIVE}/ensemble
 targetGrid=${MIDAS_ARCHIVE}/constants/targetGrid_10km
 gzSfc=${MIDAS_ARCHIVE}/constants/GZ_sfc.fstd
 ctlmem=${MIDAS_ARCHIVE}/ensemble_control/*_006_0000
-nml=${PWD}/nml_interpEnsTrials
+nml=${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks/nml_interpEnsTrials
 npex=30
 npey=20
+
+cd ${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks
 
 ./interpEnsTrials -pgm      ${ensPostProcess_program}             \
                   -nml      ${nml}      -targetGrid ${targetGrid} \
@@ -298,8 +298,11 @@ that has been compiled at the build step.
 ```bash
 cd ${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks
 
+nml=${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks/nml_10km
+splitobs_program=${MIDAS_BENCHMARKS_DIRECTORY}/midas-install/bin/midas.splitobs.Abs
+
 midas/tools/midas_scripts/midas.prepare_workdir -workdir      ${MIDAS_WORK}                 \
-                                                -nml          ${PWD}/nml_10km               \
+                                                -nml          ${nml}                        \
                                                 -ensemble     ${ensOutput}                  \
                                                 -observations ${MIDAS_ARCHIVE}/observations \
                                                 -constants    ${MIDAS_ARCHIVE}/constants    \
@@ -331,6 +334,8 @@ With `${letkf_program}` as the path to the program `midas-letkf.Abs`
 that has been compiled at the build step, launch the program with:
 
 ```bash
+letkf_program=${MIDAS_BENCHMARKS_DIRECTORY}/midas-install/bin/midas-letkf.Abs
+
 ## It is important to always recreate the 'obs' subdirectory before each execution
 rm -rf obs
 cp -r obsfiles_split obs
@@ -353,14 +358,19 @@ program can use.
 This script will provide a PASS or FAIL rating
 
 ```bash
-${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks
+energyNorm_program=${MIDAS_BENCHMARKS_DIRECTORY}/midas-install/bin/midas-energyNorm.Abs
+nml=${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks/midas/maestro/suites/midas_system_tests/config/Tests/energyNorm/analmean/nml
+reference=${MIDAS_ARCHIVE}/reference/2024091900_000_analmean
+letkf_analmean=${MIDAS_WORK}/2024091900_000_analmean
 
 ## load the MPI environment
 
-./verify -pgm ${energyNorm_program} -date 2024091900                   \
-         -nml ${PWD}/midas/maestro/suites/midas_system_tests/config/Tests/energyNorm/analmean/nml \
-         -reference ${MIDAS_ARCHIVE}/reference/2024091900_000_analmean \
-         -states ${MIDAS_WORK}/2024091900_000_analmean                 \
+cd ${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks
+
+./verify -pgm ${energyNorm_program} -date 2024091900 \
+         -nml ${nml}                                 \
+         -reference ${reference}                     \
+         -states ${letkf_analmean}                   \
          -workdir ${MIDAS_VERIFY_WQRKDIR}
 ```
 
