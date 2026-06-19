@@ -213,7 +213,10 @@ environment variables to the `mpirun` call such as:
 ```bash
 mpirun -x CMCCONST -x TMG_ON -x OMP_STACKSIZE -n $((npex*npey)) ${letkf_program}
 ``̀
-
+or use something like:
+`̀ `bash
+export OMPI_MCA_mca_base_env_list="TMG_ON;OMP_STACKSIZE;CMCCONST"
+```
 
 ### Checking the results
 
@@ -349,6 +352,16 @@ mpirun -n $((npex*npey)) ${letkf_program}
 
 This configuration has been tested with `npex=48`, `npey=52`,
 `OMP_NUM_THREADS=4` and a total of `(48x52)x10 GB` of memory.
+
+Again, depending on your `mpirun`, you may need to add explicitely the
+environment variables to the `mpirun` call such as:
+```bash
+mpirun -x CMCCONST -x TMG_ON -x OMP_STACKSIZE -n $((npex*npey)) ${letkf_program}
+``̀
+or use something like:
+`̀ `bash
+export OMPI_MCA_mca_base_env_list="TMG_ON;OMP_STACKSIZE;CMCCONST"
+```
 
 # Run verification
 
