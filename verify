@@ -82,22 +82,21 @@ for stateFile in $(echo ${states} | tr ' '  '\n'); do
 done
 
 ulimit -c unlimited
+ulimit -s unlimited
 
 export TMG_ON=YES
 export OMP_STACKSIZE=4G
 
 export MIDAS_DATE=${date}
 
-## When FOR_DUMP_CORE_FILE=1 and the code abort on runtime error, cores
-## will be dumped in the work directory; one per process.
-## Each core can weight O(10) Gb (times the number of processes)
-export FOR_DUMP_CORE_FILE=
+## Those variables need to be passed to the program called by 'mpirun'
+## for OpenMPI.
+export OMPI_MCA_mca_base_env_list="TMG_ON;OMP_STACKSIZE;MIDAS_DATE"
 
 say "Start of ${energyNorm_program} at $(date +%Y%m%d:%H:%M:%S.%N)"
 say "The listing will be available in the file ${PWD}/listing"
 
 SECONDS=0
-
 mpirun -n $((npex*npey)) ${energyNorm_program} > listing
 
 say "End of ${energyNorm_program} in ${SECONDS} seconds at $(date +%Y%m%d:%H:%M:%S.%N)"

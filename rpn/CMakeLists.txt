@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 #----- Append EC specific module path
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_rpn/modules $ENV{EC_CMAKE_MODULE_PATH})
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/rmn/cmake_rpn/modules $ENV{EC_CMAKE_MODULE_PATH})
 
 include(ec_init)           # Include EC specific cmake utils
 
@@ -18,4 +18,3 @@ add_subdirectory(rpncomm rpncomm)
 add_subdirectory(random random)
 add_subdirectory(cclargs cclargs)
 add_subdirectory(burp-tools burp-tools)
-

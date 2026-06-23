@@ -87,6 +87,7 @@ ln -s ${ensInput} ensemble_trial
 ln -s ${targetGrid} targetgrid
 
 ulimit -c unlimited
+ulimit -s unlimited
 
 export TMG_ON=YES
 export OMP_STACKSIZE=4G
@@ -98,6 +99,10 @@ say "Start of ${ensPostProcess_program} at $(date +%Y%m%d:%H:%M:%S.%N)"
 say "The listing will be available in the file ${PWD}/listing"
 
 SECONDS=0
+
+## Those variables need to be passed to the program called by 'mpirun'
+## for OpenMPI.
+export OMPI_MCA_mca_base_env_list="TMG_ON;OMP_STACKSIZE;FST_OPTIONS"
 
 mpirun -n $((npex*npey)) ${ensPostProcess_program} > listing
 

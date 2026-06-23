@@ -22,10 +22,6 @@
 	path = rpn/burp-tools
 	url = https://github.com/ECCC-ASTD-MRD/burp-tools.git
 	branch = master
-[submodule "rpn/cmake_rpn"]
-	path = rpn/cmake_rpn
-	url = https://github.com/ECCC-ASTD-MRD/cmake_rpn.git
-	branch = master
 [submodule "rpn/tdpack"]
 	path = rpn/tdpack
 	url = https://github.com/ECCC-ASTD-MRD/tdpack.git
