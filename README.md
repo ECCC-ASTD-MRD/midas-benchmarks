@@ -99,7 +99,7 @@ variable `MKL_SUPPORT`).
 
 ```bash
 export MIDAS_COMPILE_EXTLIBS="f90sqlite,udfsqlite,perftools"
-export EC_CMAKE_MODULE_PATH="${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks/rpn/rmn/cmake_rpn/modules;${CMAKE_MODULE_PATH}"
+export EC_CMAKE_MODULE_PATH="${MIDAS_BENCHMARKS_DIRECTORY}/midas-benchmarks/rpn/rmn/cmake_rpn/modules;${EC_CMAKE_MODULE_PATH}"
 export CMAKE_PREFIX_PATH=${MIDAS_BENCHMARKS_DIRECTORY}/rpn-install:${CMAKE_PREFIX_PATH}
 export PATH=${MIDAS_BENCHMARKS_DIRECTORY}/rpn-install/bin:${PATH}
 ## The variable 'rttov_INSTALLDIR' should be set to the RTTOV13 install directory
